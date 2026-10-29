@@ -6,7 +6,7 @@
 <title>VOCAP</title>
 <script>window.VOCAP_FB=true;</script>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#17113A">
+<meta name="theme-color" content="#0D0A1E">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -244,7 +244,104 @@ button{cursor:pointer}
 .gbtn svg{width:18px;height:18px}
 .who{font-size:14px;color:rgba(255,255,255,.85);font-weight:600}
 .outbtn{border:1px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.8);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
+
+/* ===== 다크 테마 (Qnote 스타일) ===== */
+:root:root:root{
+  --bg:#0D0A1E; --surface:#1A1633; --surface2:#231E44; --line:#2E2858; --ink:#F1EEFF; --muted:#9C95C4;
+  --accent:#8B6CFF; --accent2:#B48CFF; --accent-ink:#FFFFFF; --soft:#2A2356; --hl:#2A2356; --hl-ink:#C9B8FF;
+  --good:#5EE0A0; --good-bg:#11302A; --bad:#FF7A8F; --bad-bg:#3A1828; --mid:#F5B85A; --mid-bg:#3A2A14;
+  --shadow:0 14px 40px rgba(0,0,0,.45); --grad:linear-gradient(90deg,#6E4BFF,#B07CFF);
+  color-scheme:dark;
+}
+html{background:#0D0A1E}
+body{background:radial-gradient(1100px 650px at 50% -5%,#241B52 0%,rgba(13,10,30,0) 65%),#0D0A1E;background-attachment:fixed}
+.hero{background:transparent}
+.mode,.card,.panel,.tile,.daybtn{background:linear-gradient(180deg,#1E1940 0%,#161230 100%);border-color:var(--line)}
+.mode .ic,.sec-h .ic{background:#2A2356;color:#C9B8FF}
+.sec h3{color:#fff}
+.stat{background:#231E44;border:1px solid #2E2858}
+.stat b{color:#B49CFF}
+.bar,.tbar,.daybtn .mini{background:#2A2550}
+.wlist{border-color:var(--line)}
+.wrow{border-color:#262049}
+.seg{background:#1A1633;border:1px solid var(--line)}
+.btn{box-shadow:0 10px 30px rgba(123,92,255,.45)}
+.btn.ghost{background:#231E44;color:var(--ink);border:1px solid var(--line)}
+.reset{background:#231E44;color:var(--muted)}
+.iconbtn{background:#231E44;color:var(--ink)}
+.top h2{color:#B49CFF;font-size:18px;font-weight:800}
+.pill,.timer.pill{background:#2A2356;color:#C9B8FF;font-family:var(--en);font-weight:800}
+.prompt-label{color:#B49CFF;font-weight:700;text-align:center}
+.prompt{text-align:center;color:#fff}
+.tally{color:var(--muted)}
+/* 보기: 왼쪽 번호, 가운데 글자, 정답에 체크 */
+.choices{grid-template-columns:1fr;gap:12px}
+.choice{position:relative;justify-content:center;text-align:center;background:#1B1736;border:1.5px solid var(--line);border-radius:16px;min-height:64px;padding:14px 52px;color:#E9E5FF}
+.choices .choice::before{position:absolute;left:20px;top:50%;transform:translateY(-50%);color:#9C95C4;font-family:var(--en);font-weight:800;font-size:16px}
+.choices .choice:nth-child(1)::before{content:'1'}.choices .choice:nth-child(2)::before{content:'2'}
+.choices .choice:nth-child(3)::before{content:'3'}.choices .choice:nth-child(4)::before{content:'4'}
+.choice:hover{background:#221D45;border-color:#5A4BB0}
+.choice.right{background:#2A2160;border-color:#B49CFF;color:#fff;font-weight:700}
+.choice.right::after{content:'✓';position:absolute;right:20px;top:50%;transform:translateY(-50%);color:#C9B8FF;font-weight:800;font-size:18px}
+.choice.wrong{background:var(--bad-bg);border-color:var(--bad);color:#FFC2CC}
+.tf .choice{padding:14px}
+.tf .choice::before{display:none}
+/* 피드백 띠 */
+.feedback{border-radius:16px;text-align:center}
+.feedback.ok{background:#11302A;color:#5EE0A0}
+.feedback.no{background:#33261A;color:#F5D7A8}
+.feedback.no .en{color:#fff}
+/* 낱말카드 */
+.face{background:linear-gradient(180deg,#201A46 0%,#151230 100%);border-color:#332C63}
+.face.back{background:linear-gradient(180deg,#2A2160 0%,#1A1540 100%)}
+.face .big-en{background:linear-gradient(135deg,#D5C8FF,#8B6CFF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.well{background:#151230;border:1px solid var(--line)}
+.sblock{background:#231E44;border-color:var(--line)}
+.target{background:#2A2356;color:#E2D9FF}
+.chk label{background:#231E44}
+.typein input{background:#151230;border-color:var(--line);color:#fff}
+.typein input:focus{background:#1B1736;border-color:#8B6CFF}
+.xfer,.q{border-color:#262049}
+.done h3{background:linear-gradient(90deg,#B49CFF,#E0D4FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.score{background:linear-gradient(90deg,#B49CFF,#E0D4FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* XP·레벨·복습 */
+.lvcard{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center}
+.lvring{position:relative;width:150px;height:150px}
+.lvring svg{width:100%;height:100%}
+.lvtxt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.lvtxt b{font-family:var(--en);font-size:34px;font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1}
+.lvtxt span{font-size:13px;color:var(--muted);margin-top:6px}
+.lvstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.lvstats div{background:#231E44;border:1px solid var(--line);border-radius:16px;padding:14px 6px;text-align:center}
+.lvstats b{display:block;font-family:var(--en);font-size:24px;font-weight:800;color:#B49CFF;line-height:1.1}
+.lvstats span{font-size:13px;color:var(--muted)}
+.badges{grid-column:1/-1;display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:4px}
+.bdg{display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:transparent;padding:0}
+.bdg i{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:24px;background:radial-gradient(circle at 35% 30%,#3A3270,#1E1940);border:1px solid #3A3270;filter:grayscale(1);opacity:.45}
+.bdg.on i{filter:none;opacity:1;background:radial-gradient(circle at 35% 30%,#7E68E8,#3A2C8F);border-color:#9C86FF;box-shadow:0 6px 18px rgba(123,92,255,.4)}
+.bdg span{font-size:11px;color:var(--muted);text-align:center;line-height:1.3}
+.bdg.on span{color:#E2D9FF}
+.bdgdesc{grid-column:1/-1;margin:0;text-align:center;font-size:13px;color:#C9B8FF;background:#231E44;border-radius:999px;padding:8px 14px}
+.tl{display:flex;align-items:flex-start;justify-content:center;margin:4px 0 18px}
+.tlc{display:flex;flex-direction:column;align-items:center;gap:6px;width:76px}
+.tlc i{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:20px;color:#9C95C4;border:2px dashed #3A3270}
+.tlc.on i{background:linear-gradient(135deg,#8B6CFF,#B48CFF);color:#fff;border:0;box-shadow:0 8px 22px rgba(123,92,255,.4)}
+.tlc b{font-size:15px;color:#fff}.tlc span{font-size:12px;color:var(--muted)}
+.tll{flex:0 0 36px;height:2px;background:#3A3270;margin-top:32px}
+.revlist{display:grid;gap:10px;margin-bottom:12px}
+.revrow{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:10px;background:#1B1736;border:1.5px solid var(--line);border-radius:16px;padding:14px 18px}
+.revrow i{font-style:normal;color:#B49CFF}.revrow b{font-family:var(--en);font-size:18px;text-align:center}.revrow span{font-size:13px;color:var(--muted)}
+.fbar{border-radius:16px;padding:14px 18px;text-align:center;font-size:15px;font-weight:600;background:#231E44;color:#C9B8FF}
+.fbar.ok{background:#11302A;color:#5EE0A0}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;transition:all .25s;z-index:50;pointer-events:none;
+  background:#2A2356;color:#E2D9FF;border:1px solid #4A3FA0;border-radius:999px;padding:10px 20px;font-weight:700;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.5);white-space:nowrap}
+.toast.on{transform:translate(-50%,0);opacity:1}
+.toast.xp{background:#11302A;color:#5EE0A0;border-color:#1F5A47;font-family:var(--en)}
+.toast.lv{background:linear-gradient(90deg,#6E4BFF,#B07CFF);color:#fff;border:0}
+@media (max-width:600px){.lvcard{grid-template-columns:1fr;justify-items:center}.lvstats{width:100%}.badges{grid-template-columns:repeat(4,1fr)}}
 </style>
+
 </head>
 <body>
 
@@ -260,6 +357,16 @@ button{cursor:pointer}
   </header>
 
   <div class="wrap">
+    <div class="sec">
+      <h3>내 레벨</h3>
+      <p class="desc">맞힐수록 XP가 쌓이고, 꾸준히 하면 배지가 열려요.</p>
+      <div class="card lvcard" id="lvBox"></div>
+    </div>
+    <div class="sec">
+      <h3>오답 복습</h3>
+      <p class="desc">틀린 단어는 자동으로 모였다가, 잊을 때쯤인 1일, 3일, 7일 뒤에 다시 나와요.</p>
+      <div class="card" id="revBox"></div>
+    </div>
     <div class="sec">
       <h3>Day 고르기</h3>
       <p class="desc">총 25 Day, 1000단어예요. 숫자 아래 막대가 Day별 진행률이에요.</p>
@@ -339,7 +446,6 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const pick=(arr,n,exclude)=>shuffle(arr.filter(x=>x!==exclude)).slice(0,n);
 
-function record(w,ok){const h=S.hist[w.en]||[];h.push(ok?1:0);S.hist[w.en]=h.slice(-2);save();}
 function status(w){const h=S.hist[w.en];if(!h||!h.length)return 'n';return (h.length===2&&h[0]&&h[1])?'m':'l';}
 function pool(){if(S.set==='star'){const p=WORDS.filter(w=>S.star.includes(w.en));if(p.length>=4)return p;}return WORDS;}
 function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
@@ -355,11 +461,102 @@ function setDay(n,push){n=Math.max(1,Math.min(DAYS.length,n|0));S.day=n;save();l
   const sw=S.star.filter(e=>WORDS.some(w=>w.en===e));if(S.set==='star'&&sw.length<4){S.set='all';save();}
   if(push){try{history.replaceState(null,'','#day-'+n)}catch(e){location.hash='day-'+n}}
   renderHome();}
+/* ---------- XP · 레벨 · 배지 · 오답 복습 ---------- */
+const ALLW_OBJ=DAYS.flatMap((d,di)=>d.map(([en,ko])=>({en,ko,day:di+1})));
+const WMAP=Object.fromEntries(ALLW_OBJ.map(w=>[w.en,w]));
+S.xp=S.xp||0;S.streak=S.streak||{last:'',count:0,max:0};S.badges=S.badges||[];S.review=S.review||{};S.reviewDone=S.reviewDone||0;
+const ymd=(d=new Date())=>{const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());};
+const addDays=(n)=>{const d=new Date();d.setDate(d.getDate()+n);return ymd(d);};
+const GAPS=[1,3,7]; // 틀리면 1일 뒤, 맞히면 3일 뒤, 또 맞히면 7일 뒤, 그다음 졸업
+function lvInfo(xp){let lv=1,need=100,rest=xp;while(rest>=need){rest-=need;lv++;need=100+(lv-1)*50;}return {lv,rest,need,pct:Math.round(rest/need*100)};}
+const BADGES=[
+  {id:'first',icon:'🌱',name:'첫 걸음',desc:'처음으로 단어 공부하기'},
+  {id:'streak3',icon:'🔥',name:'3일 연속 학습',desc:'3일 연속 공부하기'},
+  {id:'streak7',icon:'🔥',name:'7일 연속 학습',desc:'7일 연속 공부하기'},
+  {id:'streak30',icon:'🏆',name:'30일 연속 학습',desc:'30일 연속 공부하기'},
+  {id:'day1',icon:'📗',name:'첫 Day 정복',desc:'Day 하나를 100% 채우기'},
+  {id:'m100',icon:'⭐',name:'100단어 암기',desc:'암기 완료 단어 100개'},
+  {id:'m500',icon:'🌟',name:'500단어 암기',desc:'암기 완료 단어 500개'},
+  {id:'m1000',icon:'👑',name:'1000단어 정복',desc:'워드마스터 하이퍼 2000 완주'},
+  {id:'rev10',icon:'🛡️',name:'오답 극복 10',desc:'오답 복습으로 10단어 졸업'},
+  {id:'perfect',icon:'💯',name:'만점',desc:'10문제 이상 테스트 만점'},
+  {id:'speed',icon:'⚡',name:'번개 손',desc:'카드 맞추기 20초 안에 끝내기'},
+  {id:'xp1000',icon:'💎',name:'1000 XP',desc:'XP 1000 모으기'}
+];
+let toastQ=[],toastOn=false;
+function toast(html,kind){toastQ.push([html,kind]);if(!toastOn)nextToast();}
+function nextToast(){const t=toastQ.shift();if(!t){toastOn=false;return;}toastOn=true;let el=$('#toast');if(!el){el=document.createElement('div');el.id='toast';document.body.appendChild(el);}
+  el.className='toast '+(t[1]||'');el.innerHTML=t[0];requestAnimationFrame(()=>el.classList.add('on'));
+  setTimeout(()=>{el.classList.remove('on');setTimeout(nextToast,250);},t[1]==='badge'||t[1]==='lv'?2200:900);}
+function award(id){if(S.badges.includes(id))return;const b=BADGES.find(x=>x.id===id);if(!b)return;S.badges.push(id);toast(`새 배지 획득! ‘${b.name}’ ${b.icon}`,'badge');}
+function masteredCount(){let n=0;for(const k in S.hist){const h=S.hist[k];if(h.length===2&&h[0]&&h[1])n++;}return n;}
+function checkBadges(){
+  if(S.xp>0||Object.keys(S.hist).length)award('first');
+  const st=S.streak.count;if(st>=3)award('streak3');if(st>=7)award('streak7');if(st>=30)award('streak30');
+  const m=masteredCount();if(m>=100)award('m100');if(m>=500)award('m500');if(m>=1000)award('m1000');
+  if(S.reviewDone>=10)award('rev10');if(S.xp>=1000)award('xp1000');
+  if(DAYS.some((_,i)=>dayPct(i+1)===100))award('day1');
+}
+function touchStudy(){const t=ymd();if(S.streak.last===t)return;S.streak.count=(S.streak.last===addDays(-1))?S.streak.count+1:1;S.streak.last=t;S.streak.max=Math.max(S.streak.max||0,S.streak.count);S.lastStudy=t;}
+function gainXP(n,quiet){const before=lvInfo(S.xp).lv;S.xp+=n;touchStudy();if(!quiet)toast(`+${n} XP`,'xp');const after=lvInfo(S.xp).lv;if(after>before)toast(`레벨 업! Lv.${after} 🎉`,'lv');checkBadges();save();}
+let lastRec=null;
+function record(w,ok,xp){
+  const h=S.hist[w.en]||[];h.push(ok?1:0);S.hist[w.en]=h.slice(-2);
+  const t=ymd(),r=S.review[w.en];lastRec={en:w.en,prev:r?{...r}:null};
+  if(!ok){S.review[w.en]={stage:0,due:addDays(GAPS[0])};}
+  else if(r&&r.due<=t){const s=r.stage+1;if(s>=GAPS.length){delete S.review[w.en];S.reviewDone=(S.reviewDone||0)+1;}else S.review[w.en]={stage:s,due:addDays(GAPS[s])};}
+  gainXP(xp!=null?xp:(ok?10:2),true);
+}
+function undoWrong(w){S.hist[w.en]=(S.hist[w.en]||[]).slice(0,-1).concat([1]);
+  if(lastRec&&lastRec.en===w.en){if(lastRec.prev)S.review[w.en]=lastRec.prev;else delete S.review[w.en];}S.xp+=8;save();}
+function dueList(){const t=ymd();return Object.entries(S.review).filter(([en,r])=>r.due<=t&&WMAP[en]).map(([en,r])=>({...WMAP[en],stage:r.stage}));}
+
+function renderGame(){
+  const L=lvInfo(S.xp),R=2*Math.PI*52,off=R*(1-L.pct/100);
+  $('#lvBox').innerHTML=`<div class="lvring"><svg viewBox="0 0 120 120"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B6CFF"/><stop offset="1" stop-color="#C9B0FF"/></linearGradient></defs>
+    <circle cx="60" cy="60" r="52" fill="none" stroke="#2A2550" stroke-width="10"/>
+    <circle cx="60" cy="60" r="52" fill="none" stroke="url(#lg)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${R}" stroke-dashoffset="${off}" transform="rotate(-90 60 60)"/></svg>
+    <div class="lvtxt"><b>Lv.${L.lv}</b><span>다음까지 ${L.pct}%</span></div></div>
+    <div class="lvstats"><div><b>${S.xp.toLocaleString()}</b><span>총 XP</span></div><div><b>${S.streak.last===ymd()||S.streak.last===addDays(-1)?S.streak.count:0}일</b><span>연속 학습 🔥</span></div><div><b>${masteredCount()}</b><span>암기 완료</span></div></div>
+    <div class="badges">${BADGES.map(b=>{const on=S.badges.includes(b.id);return `<button class="bdg${on?' on':''}" data-b="${b.id}" title="${esc(b.name)}"><i>${on?b.icon:'🔒'}</i><span>${esc(b.name)}</span></button>`}).join('')}</div>
+    <p class="bdgdesc" id="bdgDesc">배지를 누르면 얻는 방법이 나와요.</p>`;
+  $('#lvBox').querySelectorAll('.bdg').forEach(b=>b.onclick=()=>{const x=BADGES.find(y=>y.id===b.dataset.b);$('#bdgDesc').textContent=`${x.icon} ${x.name}: ${x.desc}${S.badges.includes(x.id)?' (획득!)':''}`;});
+  const due=dueList(),all=Object.keys(S.review).length,cnt=[0,0,0];Object.values(S.review).forEach(r=>cnt[Math.min(2,r.stage)]++);
+  $('#revBox').innerHTML=`<div class="tl">${GAPS.map((g,i)=>`<div class="tlc${cnt[i]?' on':''}"><i>↻</i><b>${g}일</b><span>${cnt[i]}개</span></div>${i<2?'<div class="tll"></div>':''}`).join('')}</div>
+    ${due.length?`<div class="revlist">${due.slice(0,4).map(w=>`<div class="revrow"><i>↻</i><b>${esc(w.en)}</b><span>Day ${w.day}</span></div>`).join('')}${due.length>4?`<p class="note" style="text-align:center;margin:6px 0 0">외 ${due.length-4}개</p>`:''}</div>
+      <div class="fbar ok">오늘 복습할 단어 ${due.length}개가 기다려요.</div><button class="btn" id="revGo" style="width:100%;margin-top:12px">복습 시작</button>`
+    :`<div class="fbar">${all?`오늘 복습할 단어는 없어요. 복습 대기 중인 단어 ${all}개`:'틀린 단어는 여기 모였다가 1일, 3일, 7일 뒤에 다시 나와요.'}</div>`}`;
+  const g=$('#revGo');if(g)g.onclick=()=>go('review');
+}
+
+/* ---------- 오답 복습 모드 ---------- */
+function review(){
+  title('오답 복습');
+  let list=shuffle(dueList()),i=0,right=0;const st=stage();
+  function next(){
+    if(i>=list.length){st.innerHTML=`<div class="panel done"><h3>복습 끝!</h3><p>${list.length}개 중 ${right}개 맞혔어요. 맞힌 단어는 다음 복습 날짜로 넘어가고, 틀린 단어는 내일 다시 나와요.</p><div class="row"><button class="btn" id="hm">처음으로</button></div></div>`;$('#hm').onclick=()=>go(null);return;}
+    const w=list[i],toKo=S.dir==='en',pool=ALLW_OBJ.filter(x=>x.en!==w.en),opts=shuffle([w,...shuffle(pool).slice(0,3)]);
+    st.innerHTML=`<div class="tally"><span>Day ${w.day} · ${GAPS[Math.min(w.stage,2)]}일 복습</span><span>${i+1} / ${list.length}</span></div><div class="bar"><i style="width:${i/list.length*100}%"></i></div>
+    <div class="panel"><p class="prompt-label">${toKo?'알맞은 뜻을 고르세요':'알맞은 단어를 고르세요'}</p><p class="prompt ${toKo?'en':''}">${esc(toKo?w.en:w.ko)}</p>
+    <div class="choices">${opts.map((o,k)=>`<button class="choice ${toKo?'':'en'}" data-k="${k}">${esc(toKo?o.ko:o.en)}</button>`).join('')}</div><div id="fb"></div></div>`;
+    if(toKo)speak(w.en);
+    st.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{const ok=opts[b.dataset.k]===w;
+      st.querySelectorAll('.choice').forEach(x=>{x.disabled=true;if(opts[x.dataset.k]===w)x.classList.add('right');});
+      if(!ok)b.classList.add('wrong');record(w,ok,ok?12:2);if(ok)right++;
+      $('#fb').innerHTML=ok?`<div class="feedback ok">정답! ${S.review[w.en]?'다음 복습은 '+GAPS[S.review[w.en].stage]+'일 뒤':'복습 졸업 🎓'} · +12 XP</div>`
+        :`<div class="feedback no">정답은 <span class="en">${esc(w.en)}</span> = ${esc(w.ko)} · 내일 다시 나와요</div>`;
+      $('#fb').insertAdjacentHTML('beforeend','<div class="row" style="margin-top:12px"><button class="btn" id="cont">계속</button></div>');
+      $('#cont').onclick=()=>{i++;next();};});
+  }
+  if(!list.length){st.innerHTML=`<div class="panel done"><h3>오늘 복습 끝!</h3><p>지금 복습할 단어가 없어요.</p><div class="row"><button class="btn" id="hm">처음으로</button></div></div>`;$('#hm').onclick=()=>go(null);return;}
+  next();
+}
+
 function renderHome(){
   document.title='VOCAP · Day '+S.day;
   $('#dayTitle').textContent='Day '+S.day;$('#ovLabel').textContent='Day '+S.day+' 진행률';
   $('#prevDay').disabled=S.day===1;$('#nextDay').disabled=S.day===DAYS.length;
-  renderDays();
+  renderDays();renderGame();
   let c={n:0,l:0,m:0};
   $('#wlist').innerHTML=WORDS.map(w=>{const s=status(w);c[s]++;const st=S.star.includes(w.en);
     return `<div class="wrow"><span class="dot ${s}"></span><span class="en">${esc(w.en)}</span><span class="ko">${esc(w.ko)}</span><button class="star" data-star="${esc(w.en)}" aria-pressed="${st}" aria-label="별표">${st?'★':'☆'}</button></div>`}).join('');
@@ -372,14 +569,14 @@ $('#dirSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(
 $('#setSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
   if(b.dataset.set==='star'&&S.star.filter(e=>WORDS.some(w=>w.en===e)).length<4){alert('이 Day에서 별표를 4개 이상 표시하면 별표 단어만 공부할 수 있어요. 아래 단어 목록에서 ☆를 눌러 주세요.');return;}
   S.set=b.dataset.set;save();renderHome();});
-$('#resetBtn').addEventListener('click',()=>{if(confirm('학습 기록을 모두 지울까요? 별표는 남겨 둬요.')){S.hist={};S.best={};save();renderHome();}});
+$('#resetBtn').addEventListener('click',()=>{if(confirm('학습 기록을 모두 지울까요? 별표는 남겨 둬요.')){S.hist={};S.best={};S.review={};save();renderHome();}});
 
 let cleanup=null;
 function go(mode){
   if(cleanup){cleanup();cleanup=null;}
   if(!mode){$('#screen').classList.add('hidden');$('#home').classList.remove('hidden');renderHome();window.scrollTo(0,0);return;}
   $('#home').classList.add('hidden');$('#screen').classList.remove('hidden');$('#scRight').innerHTML='';window.scrollTo(0,0);
-  ({cards,learn,test,match,blast,blocks,gems})[mode]();
+  ({cards,learn,test,match,blast,blocks,gems,review})[mode]();
 }
 document.querySelector('.modes').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go);});
 $('#backBtn').addEventListener('click',()=>go(null));
@@ -422,7 +619,7 @@ function cards(list){
     fc.addEventListener('touchend',e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>70)answer(dx>0);});
   }
   function flip(){flipped=!flipped;$('#fc').classList.toggle('flip',flipped);if(flipped&&S.dir==='ko')speak(deck[i].en);}
-  function answer(ok){const w=deck[i];record(w,ok);(ok?known:unknown).push(w);
+  function answer(ok){const w=deck[i];record(w,ok,ok?4:1);(ok?known:unknown).push(w);
     const fc=$('#fc');fc.classList.remove('flip');fc.classList.add(ok?'swipe-r':'swipe-l');setTimeout(()=>{i++;draw();},220);}
   function key(e){if(!$('#fc'))return;if(e.code==='Space'){e.preventDefault();flip();}else if(e.key==='ArrowLeft')answer(false);else if(e.key==='ArrowRight')answer(true);}
   document.addEventListener('keydown',key);cleanup=()=>document.removeEventListener('keydown',key);
@@ -467,12 +664,12 @@ function learn(){
     const ti=$('#ti');ti.focus();
     const check=(given)=>{
       const ok=isAns(given,w);record(w,ok);ti.disabled=true;$('#idk').disabled=true;
-      if(ok){$('#fb').innerHTML=`<div class="feedback ok">정답!</div>`;lv[w.en]=2;speak(w.en);setTimeout(next,700);}
+      if(ok){$('#fb').innerHTML=`<div class="feedback ok">정답! +10 XP</div>`;lv[w.en]=2;speak(w.en);setTimeout(next,700);}
       else{queue.splice(Math.min(3,queue.length),0,w);
         $('#fb').innerHTML=`<div class="feedback no">${given.trim()?`내 답: ${esc(given.trim())}<br>`:''}정답: <span class="en">${esc(w.en)}</span></div>
         <div class="row" style="margin-top:12px"><button class="btn ghost" id="mine">오타였어요, 맞은 걸로</button><button class="btn" id="cont">계속</button></div>`;
         speak(w.en);
-        $('#cont').onclick=next;$('#mine').onclick=()=>{S.hist[w.en]=(S.hist[w.en]||[]).slice(0,-1).concat([1]);save();lv[w.en]=2;queue=queue.filter(x=>x!==w);next();};
+        $('#cont').onclick=next;$('#mine').onclick=()=>{undoWrong(w);lv[w.en]=2;queue=queue.filter(x=>x!==w);next();};
       }
     };
     $('#tf').onsubmit=e=>{e.preventDefault();if(!ti.disabled&&ti.value.trim())check(ti.value);return false;};
@@ -526,6 +723,7 @@ function runTest(words,types){
         if(!q.truth){a.innerHTML=`<span class="en">${esc(q.w.en)}</span>의 뜻은 ${esc(q.w.ko)}`;a.classList.remove('hidden');}}
       if(q.t==='wr'){const inp=el.querySelector('input');ok=isAns(inp.value,q.w);inp.disabled=true;if(!ok){a.innerHTML=`정답: <span class="en">${esc(q.w.en)}</span>`;a.classList.remove('hidden');}}
       el.classList.add(ok?'correct':'incorrect');if(ok)score++;record(q.w,ok);});
+    if(score===qs.length&&qs.length>=10){award('perfect');save();}
     $('#submitT').remove();
     const wrong=qs.filter((q,i)=>$('#q'+i).classList.contains('incorrect')).map(q=>q.w);
     const box=document.createElement('div');box.className='panel done';box.style.marginBottom='14px';
@@ -554,7 +752,7 @@ function match(){
     if(sel===b){b.classList.remove('sel');sel=null;return;}
     const s=tiles[sel.dataset.k];
     if(s.w===t.w&&s.en!==t.en){sel.classList.add('gone');b.classList.add('gone');sel=null;left--;
-      if(!left){cancelAnimationFrame(raf);const time=(performance.now()-t0)/1000+pen;const nb=!best||time<best;if(nb){S.best[S.day+'match']=time;save();}
+      if(!left){cancelAnimationFrame(raf);const time=(performance.now()-t0)/1000+pen;gainXP(15);if(time<20)award('speed');const nb=!best||time<best;if(nb){S.best[S.day+'match']=time;save();}
         setTimeout(()=>{stage().innerHTML=`<div class="panel done"><h3>${time.toFixed(1)}초</h3><p>${nb?'새 최고 기록이에요!':`최고 기록 ${best.toFixed(1)}초`}</p><div class="row"><button class="btn" id="re">다시 하기</button><button class="btn ghost" id="hm">처음으로</button></div></div>`;$('#re').onclick=match;$('#hm').onclick=()=>go(null);},300);}
     }else{pen+=1;const a=sel;a.classList.remove('sel');a.classList.add('wrong');b.classList.add('wrong');sel=null;setTimeout(()=>{a.classList.remove('wrong');b.classList.remove('wrong');},450);}
   });
@@ -581,7 +779,7 @@ function blast(){
       el.onclick=()=>hit(r);});
   }
   function hit(r){if(over)return;
-    if(r.w===target){score+=10;speed+=3;$('#bs').textContent=score;r.el.classList.add('hit');rocks=rocks.filter(x=>x!==r);setTimeout(()=>{wave();},250);rocks.forEach(x=>x.el.style.pointerEvents='none');}
+    if(r.w===target){score+=10;speed+=3;gainXP(3,true);$('#bs').textContent=score;r.el.classList.add('hit');rocks=rocks.filter(x=>x!==r);setTimeout(()=>{wave();},250);rocks.forEach(x=>x.el.style.pointerEvents='none');}
     else{r.el.classList.add('miss');loseLife();}}
   function loseLife(){lives--;$('#bl').textContent='❤️'.repeat(Math.max(0,lives))+'🤍'.repeat(3-Math.max(0,lives));if(lives<=0)end();}
   function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;const H=ar.clientHeight;
@@ -611,7 +809,7 @@ function blocks(){
     const opts=shuffle([cur,...pick(P.length>=4?P:WORDS,3,cur)]);
     $('#kc').innerHTML=opts.map((o,k)=>`<button class="choice" data-k="${k}">${esc(o.ko)}</button>`).join('');
     $('#kc').querySelectorAll('.choice').forEach(b=>b.onclick=()=>{if(busy||over)return;
-      if(opts[b.dataset.k]===cur){busy=true;b.classList.add('right');score+=10+Math.round((wl.clientHeight-y)/20);speed+=2.5;$('#ks').textContent=score;const f=$('#fall');f.classList.add('boom');setTimeout(()=>{f.remove();spawn();},260);}
+      if(opts[b.dataset.k]===cur){busy=true;b.classList.add('right');score+=10+Math.round((wl.clientHeight-y)/20);gainXP(3,true);speed+=2.5;$('#ks').textContent=score;const f=$('#fall');f.classList.add('boom');setTimeout(()=>{f.remove();spawn();},260);}
       else{b.classList.add('wrong');land();}});
   }
   function land(){if(busy)return;busy=true;const f=$('#fall');f&&f.remove();stack.push(cur);
@@ -644,7 +842,7 @@ function gems(){
     $('#gq').innerHTML=`<p class="prompt ${toKo?'en':''}">${esc(toKo?w.en:w.ko)}</p><div class="choices">${opts.map((o,k)=>`<button class="choice ${toKo?'':'en'}" data-k="${k}">${esc(toKo?o.ko:o.en)}</button>`).join('')}</div>`;
     $('#gq').querySelectorAll('.choice').forEach(b=>b.onclick=()=>{if(over)return;
       const ok=opts[b.dataset.k]===w;$('#gq').querySelectorAll('.choice').forEach(x=>x.disabled=true);
-      if(ok){combo++;const gain=Math.min(5,1+Math.floor(combo/3));score+=gain;for(let k=0;k<gain;k++)collected.push(COLORS[Math.random()*COLORS.length|0]);b.classList.add('right');}
+      if(ok){combo++;gainXP(2,true);const gain=Math.min(5,1+Math.floor(combo/3));score+=gain;for(let k=0;k<gain;k++)collected.push(COLORS[Math.random()*COLORS.length|0]);b.classList.add('right');}
       else{combo=0;wrongs.push(w);b.classList.add('wrong');$('#gq').querySelectorAll('.choice').forEach(x=>{if(opts[x.dataset.k]===w)x.classList.add('right')});}
       $('#gs').textContent=score;$('#gc').textContent=combo>=3?`${combo}연속 ×${Math.min(5,1+Math.floor(combo/3))}`:'';
       $('#gb').innerHTML=collected.slice(-80).map(c=>`<span class="gem" style="background:${c}"></span>`).join('');
@@ -669,18 +867,18 @@ if(!fromHash()){loadDay(S.day||1);renderHome();}
 let uref=null,pushTimer=null,writing=Promise.resolve();
 const SYNC_TXT={ok:'폰·패드 동기화 켜짐',loading:'동기화 연결 중',local:window.VOCAP_FB?'로그인하면 폰·패드 동기화돼요':'이 기기에만 저장돼요',err:'동기화 끊김, 이 기기엔 저장됨'};
 function setSync(k){const el=$('#syncPill');if(!el)return;el.dataset.s=k;el.textContent=SYNC_TXT[k];}
-function snapshotState(){return JSON.parse(JSON.stringify({hist:S.hist,star:S.star,best:S.best,dir:S.dir,set:S.set,day:S.day,updated:S.updated||Date.now()}));}
+function snapshotState(){return JSON.parse(JSON.stringify({hist:S.hist,star:S.star,best:S.best,dir:S.dir,set:S.set,day:S.day,xp:S.xp,streak:S.streak,badges:S.badges,review:S.review,reviewDone:S.reviewDone,lastStudy:S.lastStudy||'',updated:S.updated||Date.now()}));}
 function cloudPush(){if(!uref)return;clearTimeout(pushTimer);pushTimer=setTimeout(()=>{const data=snapshotState();
   writing=writing.then(()=>uref.set(data)).then(()=>setSync('ok')).catch(()=>setSync('err'));},1000);}
 function onHome(){return !$('#home').classList.contains('hidden');}
 function applyRemote(d){
-  S.hist=d.hist||{};S.star=d.star||[];S.best=d.best||{};S.dir=d.dir||S.dir;S.set=d.set||S.set;S.updated=d.updated||0;
+  S.hist=d.hist||{};S.star=d.star||[];S.best=d.best||{};S.xp=d.xp||0;S.streak=d.streak||{last:'',count:0,max:0};S.badges=d.badges||[];S.review=d.review||{};S.reviewDone=d.reviewDone||0;S.lastStudy=d.lastStudy||'';S.dir=d.dir||S.dir;S.set=d.set||S.set;S.updated=d.updated||0;
   if(onHome()&&d.day){S.day=d.day;}
   try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
   if(onHome()){loadDay(S.day);renderHome();}
 }
 function mergeInto(base,extra){ // extra를 base에 합치기: 기록은 base 우선, 별표는 합치고, 최고 기록은 더 좋은 쪽
-  const out={...base,hist:{...(extra.hist||{}),...(base.hist||{})},star:[...new Set([...(base.star||[]),...(extra.star||[])])],best:{...(extra.best||{})}};
+  const out={...base,hist:{...(extra.hist||{}),...(base.hist||{})},star:[...new Set([...(base.star||[]),...(extra.star||[])])],best:{...(extra.best||{})},xp:Math.max(base.xp||0,extra.xp||0),badges:[...new Set([...(base.badges||[]),...(extra.badges||[])])],review:{...(extra.review||{}),...(base.review||{})},reviewDone:Math.max(base.reviewDone||0,extra.reviewDone||0),lastStudy:[base.lastStudy||'',extra.lastStudy||''].sort().pop(),streak:((base.streak||{}).last||'')>=((extra.streak||{}).last||'')?(base.streak||extra.streak):extra.streak};
   for(const [k,v] of Object.entries(base.best||{})){const o=out.best[k];out.best[k]=o==null?v:(k.endsWith('match')?Math.min(o,v):Math.max(o,v));}
   return out;
 }
