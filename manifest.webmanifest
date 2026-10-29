@@ -1,0 +1,17 @@
+{
+  "name": "VOCAP",
+  "short_name": "VOCAP",
+  "description": "워드마스터 하이퍼 2000 단어 25 Day 암기 앱",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#17113A",
+  "theme_color": "#17113A",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

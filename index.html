@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VOCAP</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#17113A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VOCAP">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface2:#F5F3FF; --line:#ECE9F7; --ink:#15131F; --muted:#6B6880;
+  --accent:#6E4BFF; --accent2:#A26BFF; --accent-ink:#FFFFFF; --soft:#EFEAFF;
+  --hl:#EFEAFF; --hl-ink:#5B3BEA;
+  --good:#1A8F55; --good-bg:#E6F6EE; --bad:#E0445C; --bad-bg:#FDEDEF; --mid:#A86A00; --mid-bg:#FFF4DD;
+  --shadow:0 12px 34px rgba(76,52,170,.08), 0 2px 6px rgba(76,52,170,.04);
+  --grad:linear-gradient(90deg,#6E4BFF,#A26BFF);
+  --en:'Inter', 'Noto Sans KR', system-ui, sans-serif;
+  --ko:'Inter', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E0B1F; --surface:#17132E; --surface2:#211B42; --line:#2C2552; --ink:#EEEAFB; --muted:#A59FC4;
+    --accent:#8D72FF; --accent2:#B58CFF; --accent-ink:#FFFFFF; --soft:#2A2256; --hl:#2A2256; --hl-ink:#C9B9FF;
+    --good:#4CC38A; --good-bg:#14322A; --bad:#FF7A8A; --bad-bg:#3A1A26; --mid:#F0B44C; --mid-bg:#3A2E15;
+    --shadow:0 12px 34px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E0B1F; --surface:#17132E; --surface2:#211B42; --line:#2C2552; --ink:#EEEAFB; --muted:#A59FC4;
+  --accent:#8D72FF; --accent2:#B58CFF; --accent-ink:#FFFFFF; --soft:#2A2256; --hl:#2A2256; --hl-ink:#C9B9FF;
+  --good:#4CC38A; --good-bg:#14322A; --bad:#FF7A8A; --bad-bg:#3A1A26; --mid:#F0B44C; --mid-bg:#3A2E15;
+  --shadow:0 12px 34px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ko);font-size:16px;line-height:1.6;letter-spacing:-.01em;-webkit-tap-highlight-color:transparent;word-break:keep-all}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hidden{display:none!important}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 56px}
+
+/* hero */
+.hero{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 55%,#2E2167 0%,#17113A 45%,#0B0820 100%);color:#fff;text-align:center;padding:64px 20px 56px}
+.hero .stars{position:absolute;inset:0;pointer-events:none}
+.hero .stars i{position:absolute;width:3px;height:3px;border-radius:50%;background:#8F7BFF;opacity:.6}
+.hero .book{position:relative;display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);border-radius:999px;padding:6px 16px;font-size:14px;font-weight:600;margin:0}
+.hero h1{position:relative;margin:18px 0 6px;font-family:var(--en);font-weight:900;font-size:clamp(76px,17vw,160px);line-height:.95;letter-spacing:-.05em;
+  background:linear-gradient(135deg,#A58BFF 0%,#7B5CFF 45%,#B07CFF 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 8px 28px rgba(123,92,255,.45))}
+.hero .dayname{display:inline-block;margin:6px 0 14px;padding:6px 20px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-family:var(--en);font-weight:800;font-size:clamp(20px,3.6vw,28px);letter-spacing:-.01em}
+.hero p{position:relative;margin:0;color:rgba(255,255,255,.75);font-size:16px}
+
+/* home */
+.sec{margin-top:48px}
+.sec-h{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.sec-h .ic{width:52px;height:52px;border-radius:50%;background:var(--soft);display:grid;place-items:center;color:var(--accent)}
+.sec h3{font-size:clamp(26px,4.4vw,34px);font-weight:900;letter-spacing:-.03em;margin:8px 0 6px;line-height:1.25}
+.sec .desc{color:var(--muted);font-size:16px;margin:0 0 20px}
+.modes{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.mode{display:flex;align-items:center;gap:16px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:22px;padding:18px 20px;min-height:84px;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.mode:hover{border-color:var(--accent);transform:translateY(-2px)}
+.mode .ic{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--accent);flex:none}
+.mode .ic svg{width:24px;height:24px}
+.mode b{display:block;font-size:17px;font-weight:700}
+.mode small{color:var(--muted);font-size:14px;display:block;line-height:1.4;margin-top:2px}
+.opts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:22px}
+.seg{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface2)}
+.seg button{border:0;background:transparent;padding:8px 16px;font-size:14px;font-weight:600;border-radius:999px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(110,75,255,.3)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:26px;box-shadow:var(--shadow)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 18px}
+.stat{border-radius:18px;padding:18px 10px;background:var(--surface2);text-align:center}
+.stat b{font-family:var(--en);font-size:32px;font-weight:800;display:block;line-height:1.1;color:var(--accent)}
+.stat span{font-size:14px;color:var(--muted)}
+.stat.l b{color:var(--mid)} .stat.m b{color:var(--good)}
+.ov{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--muted);margin-bottom:8px}
+.pill{display:inline-block;background:var(--soft);color:var(--accent);font-weight:700;border-radius:999px;padding:4px 12px;font-size:14px}
+.bar{height:10px;background:var(--surface2);border-radius:99px;overflow:hidden;margin:4px 0 18px}
+.bar i{display:block;height:100%;background:var(--grad);width:0;border-radius:99px;transition:width .4s}
+.wlist{border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-top:6px}
+.wrow{display:grid;grid-template-columns:10px minmax(120px,28%) 1fr 40px;gap:14px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
+.wrow:first-child{border-top:0}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dot.l{background:var(--mid)} .dot.m{background:var(--good)}
+.wrow .en{font-family:var(--en);font-weight:700;font-size:17px;word-break:break-word}
+.wrow .ko{font-size:14px;color:var(--muted)}
+.star{border:0;background:transparent;font-size:20px;width:40px;height:40px;border-radius:50%;color:var(--muted)}
+.star:hover{background:var(--surface2)}
+.star[aria-pressed="true"]{color:var(--accent)}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--muted);margin:14px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.reset{margin-top:16px;border:0;background:var(--surface2);border-radius:999px;padding:9px 16px;font-size:14px;font-weight:600;color:var(--muted)}
+
+/* mode screen */
+.top{display:flex;align-items:center;gap:12px;padding:18px 0 14px}
+.iconbtn{border:0;background:var(--surface2);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:var(--ink)}
+.top h2{font-size:22px;font-weight:900;letter-spacing:-.02em;margin:0;flex:1}
+.btn{border:0;border-radius:999px;padding:14px 22px;font-weight:700;background:var(--grad);color:#fff;min-height:52px;box-shadow:0 8px 22px rgba(110,75,255,.28)}
+.btn.ghost{background:var(--surface2);color:var(--ink);box-shadow:none}
+.btn.good{background:var(--good);box-shadow:none} .btn.bad{background:var(--bad);box-shadow:none}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row .btn{flex:1}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:26px;box-shadow:var(--shadow)}
+.prompt-label{font-size:14px;color:var(--muted);margin:0 0 6px;font-weight:500}
+.prompt{font-size:22px;font-weight:700;margin:0 0 20px;letter-spacing:-.02em}
+.prompt.en{font-family:var(--en);font-size:38px;font-weight:800;letter-spacing:-.03em}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.choice{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:14px 16px;text-align:left;min-height:62px;font-size:16px}
+.choices .choice::before{color:var(--muted);font-size:15px;flex:none}
+.choices .choice:nth-child(1)::before{content:'①'} .choices .choice:nth-child(2)::before{content:'②'}
+.choices .choice:nth-child(3)::before{content:'③'} .choices .choice:nth-child(4)::before{content:'④'}
+.choice.en{font-family:var(--en);font-size:19px;font-weight:700}
+.choice:hover{border-color:var(--accent);background:var(--surface2)}
+.choice.right{background:var(--good-bg);border-color:var(--good);color:var(--good);font-weight:700}
+.choice.wrong{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.typein{display:flex;gap:8px}
+.typein input{flex:1;min-width:0;border:1.5px solid var(--line);background:var(--surface2);border-radius:16px;padding:13px 16px;font-family:var(--en);font-size:20px;font-weight:600}
+.typein input:focus{border-color:var(--accent);outline:none;background:var(--surface)}
+.feedback{margin-top:16px;padding:14px 18px;border-radius:16px;font-size:16px;font-weight:600}
+.feedback.ok{background:var(--good-bg);color:var(--good)}
+.feedback.ok::before{content:'✓  '}
+.feedback.no{background:var(--bad-bg);color:var(--ink);font-weight:500}
+.feedback .en{font-family:var(--en);font-weight:800;font-size:18px}
+.done{text-align:center;padding:40px 20px}
+.done h3{font-size:34px;font-weight:900;letter-spacing:-.03em;margin:0 0 6px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.done p{color:var(--muted);margin:0 0 22px}
+.tally{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:4px;color:var(--muted)}
+.tally .k{color:var(--good)} .tally .u{color:var(--bad)}
+.note{color:var(--muted);font-size:14px;margin:0 0 12px}
+
+/* flashcards */
+.fcwrap{perspective:1400px;margin:6px 0 16px}
+.fc{position:relative;height:min(52vh,400px);transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.7,.2,1);cursor:pointer}
+.fc.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--surface);border:1px solid var(--line);border-radius:28px;display:grid;place-items:center;padding:28px;text-align:center;box-shadow:var(--shadow)}
+.face.back{transform:rotateY(180deg);background:var(--surface2)}
+.face .big-en{font-family:var(--en);font-weight:900;font-size:clamp(40px,9vw,68px);line-height:1.05;letter-spacing:-.04em;background:linear-gradient(135deg,#7B5CFF,#A26BFF);-webkit-background-clip:text;background-clip:text;color:transparent;padding:4px}
+.face .big-ko{font-size:clamp(20px,4.4vw,28px);font-weight:700;line-height:1.55}
+.face .corner{position:absolute;top:14px;right:14px;display:flex;gap:4px}
+.face .hint{position:absolute;bottom:16px;left:0;right:0;font-size:13px;color:var(--muted);font-weight:600}
+.fc.swipe-l{transform:translateX(-120%) rotate(-8deg);opacity:0;transition:transform .25s,opacity .25s}
+.fc.swipe-r{transform:translateX(120%) rotate(8deg);opacity:0;transition:transform .25s,opacity .25s}
+
+/* match */
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tile{min-height:100px;border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:12px;font-size:15px;box-shadow:var(--shadow);transition:opacity .25s,transform .25s}
+.tile.en{font-family:var(--en);font-size:19px;font-weight:800}
+.tile.sel{border-color:var(--accent);background:var(--surface2);box-shadow:inset 0 0 0 2px var(--accent)}
+.tile.wrong{background:var(--bad-bg);border-color:var(--bad)}
+.tile.gone{opacity:0;transform:scale(.85);pointer-events:none}
+.timer{font-variant-numeric:tabular-nums}
+
+/* blast */
+.arena{position:relative;height:min(56vh,470px);background:radial-gradient(ellipse at 50% 30%,#2E2167 0%,#17113A 55%,#0B0820 100%);border-radius:26px;overflow:hidden;touch-action:manipulation}
+.rock{position:absolute;left:0;top:0;padding:12px 18px;border-radius:999px;background:rgba(255,255,255,.1);border:1.5px solid rgba(165,139,255,.6);color:#fff;font-family:var(--en);font-weight:700;font-size:17px;white-space:nowrap;backdrop-filter:blur(4px)}
+.rock:hover{border-color:#fff}
+.rock.hit{background:var(--good);border-color:var(--good);transform:scale(1.3);opacity:0;transition:all .3s}
+.rock.miss{background:rgba(224,68,92,.4);border-color:#FF7A8A}
+.ground{position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,#E0445C,#FF7A8A);opacity:.8}
+.hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:700}
+.hud b{color:var(--accent);font-family:var(--en);font-size:20px}
+.target{background:var(--hl);color:var(--hl-ink);border-radius:18px;padding:14px 18px;margin-top:14px;font-weight:700;font-size:18px;text-align:center}
+
+/* blocks */
+.well{position:relative;height:min(46vh,390px);background:var(--surface2);border-radius:26px;overflow:hidden}
+.fall{position:absolute;left:50%;transform:translateX(-50%);top:0;padding:12px 24px;background:var(--grad);color:#fff;border-radius:14px;font-family:var(--en);font-weight:800;font-size:20px;white-space:nowrap;box-shadow:0 8px 20px rgba(110,75,255,.35)}
+.fall.boom{transform:translateX(-50%) scale(1.4);opacity:0;transition:all .25s}
+.stack{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column-reverse}
+.sblock{height:38px;margin:0 14px 2px;border-radius:10px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--en);font-weight:700;color:var(--muted)}
+
+/* gems */
+.gembar{display:flex;flex-wrap:wrap;gap:5px;min-height:30px;margin:6px 0 14px}
+.gem{width:16px;height:16px;transform:rotate(45deg);border-radius:4px}
+.combo{font-weight:800;color:var(--accent)}
+.tbar{height:10px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-bottom:12px}
+.tbar i{display:block;height:100%;background:var(--grad);width:100%}
+
+/* test */
+.q{padding:22px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0}
+.q .qn{font-size:14px;color:var(--muted);font-weight:600;margin:0 0 6px}
+.q.correct .qn::after{content:'  정답';color:var(--good);font-weight:800}
+.q.incorrect .qn::after{content:'  오답';color:var(--bad);font-weight:800}
+.tf{display:flex;gap:12px}
+.tf .choice{flex:1;justify-content:center;text-align:center}
+.ans{margin-top:10px;font-size:15px;color:var(--bad);font-weight:600}
+.ans .en{font-family:var(--en);font-weight:800}
+.chk{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 22px}
+.chk label{display:flex;gap:8px;align-items:center;background:var(--surface2);border-radius:999px;padding:8px 16px;font-weight:600;font-size:14px}
+.chk input{accent-color:var(--accent)}
+.score{font-family:var(--en);font-size:64px;font-weight:900;line-height:1;letter-spacing:-.04em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+@media (max-width:600px){
+  .modes{grid-template-columns:1fr}
+  .choices{grid-template-columns:1fr}
+  .wrow{grid-template-columns:10px 1fr 40px;row-gap:2px}
+  .wrow .ko{grid-column:2/3}
+  .wrow .star{grid-row:1/3;grid-column:3}
+  .mgrid{grid-template-columns:repeat(2,1fr)}
+  .card,.panel{padding:20px;border-radius:22px}
+  .stat b{font-size:26px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+.daynav{position:relative;display:flex;justify-content:center;gap:10px;margin-top:22px}
+.daynav button{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:8px 18px;font-weight:600;font-size:14px}
+.daynav button:disabled{opacity:.3;cursor:default}
+.daygrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.daybtn{display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 6px 10px;box-shadow:var(--shadow)}
+.daybtn b{font-family:var(--en);font-size:22px;font-weight:800;line-height:1}
+.daybtn small{font-size:12px;color:var(--muted);font-weight:600;line-height:1}
+.daybtn .mini{width:70%;height:5px;border-radius:9px;background:var(--surface2);overflow:hidden}
+.daybtn .mini i{display:block;height:100%;background:var(--grad)}
+.daybtn:hover{border-color:var(--accent)}
+.daybtn.on{background:var(--grad);border-color:transparent;color:#fff;box-shadow:0 8px 22px rgba(110,75,255,.32)}
+.daybtn.on small{color:rgba(255,255,255,.85)} .daybtn.on .mini{background:rgba(255,255,255,.3)} .daybtn.on .mini i{background:#fff}
+.daybtn.full:not(.on) b{color:var(--good)}
+@media (max-width:420px){.daygrid{grid-template-columns:repeat(4,1fr)}}
+
+.hero .sync{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 14px}
+.hero .sync::before{content:'';width:8px;height:8px;border-radius:50%;background:#9AA0B8}
+.hero .sync[data-s="ok"]::before{background:#4CC38A;box-shadow:0 0 8px #4CC38A}
+.hero .sync[data-s="loading"]::before{background:#F0B44C}
+.hero .sync[data-s="err"]::before{background:#FF7A8A}
+</style>
+</head>
+<body>
+
+<section id="home">
+  <header class="hero">
+    <div class="stars" id="stars"></div>
+    <h1>VOCAP</h1>
+    <p class="dayname" id="dayTitle">Day 1</p>
+    <p>워드마스터 하이퍼 2000 · 40단어</p>
+    <p class="sync" id="syncPill" data-s="local">이 기기에만 저장돼요</p>
+    <div class="daynav"><button id="prevDay" aria-label="이전 Day">← 이전</button><button id="nextDay" aria-label="다음 Day">다음 →</button></div>
+  </header>
+
+  <div class="wrap">
+    <div class="sec">
+      <h3>Day 고르기</h3>
+      <p class="desc">총 25 Day, 1000단어예요. 숫자 아래 막대가 Day별 진행률이에요.</p>
+      <div class="daygrid" id="dayGrid"></div>
+    </div>
+    <div class="sec">
+      <h3>어떻게 외울까요?</h3>
+      <p class="desc">카드로 훑고, 학습하기로 다지고, 테스트로 확인해요. 지칠 땐 게임으로.</p>
+      <div class="modes">
+        <button class="mode" data-go="cards"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="14" rx="3"/><path d="M7 3h11a3 3 0 0 1 3 3v11"/></svg></span><span><b>낱말카드</b><small>뒤집어 보면서 외우기</small></span></button>
+        <button class="mode" data-go="learn"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg></span><span><b>학습하기</b><small>객관식 다음 직접 쓰기, 틀린 건 다시</small></span></button>
+        <button class="mode" data-go="test"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2h6v4H9z"/><path d="M9 13l2 2 4-4"/></svg></span><span><b>테스트</b><small>객관식, 주관식, O/X로 실전처럼</small></span></button>
+        <button class="mode" data-go="match"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><path d="M14 17.5h7M17.5 14v7"/></svg></span><span><b>카드 맞추기</b><small>단어와 뜻 짝 맞추기, 기록 재기</small></span></button>
+        <button class="mode" data-go="blast"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a22 22 0 0 1 2-4A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2z"/><path d="M9 12H4s.6-3 2-4c1.6-1.1 5 0 5 0M12 15v5s3-.6 4-2c1.1-1.6 0-5 0-5"/></svg></span><span><b>Blast</b><small>떨어지는 단어 중 맞는 걸 터뜨리기</small></span></button>
+        <button class="mode" data-go="blocks"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/><rect x="8" y="3" width="8" height="8" rx="1.5"/></svg></span><span><b>블록</b><small>블록이 쌓이기 전에 뜻 고르기</small></span></button>
+        <button class="mode" data-go="gems"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M12 21L8 9l4-6 4 6z"/></svg></span><span><b>보석</b><small>60초 동안 연속 정답으로 보석 모으기</small></span></button>
+      </div>
+      <div class="opts">
+        <div class="seg" id="dirSeg">
+          <button data-dir="en" aria-pressed="true">영어 → 뜻</button>
+          <button data-dir="ko" aria-pressed="false">뜻 → 영어</button>
+        </div>
+        <div class="seg" id="setSeg">
+          <button data-set="all" aria-pressed="true">전체</button>
+          <button data-set="star" aria-pressed="false">★ 표시만</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h3>학습 현황</h3>
+      <p class="desc">게임을 뺀 모든 모드에서 단어마다 최근 두 번 결과를 기준으로 해요. 두 번 연속 맞히면 암기 완료예요.</p>
+      <div class="card">
+        <div class="stats">
+          <div class="stat"><b id="sNone">0</b><span>아직 안 함</span></div>
+          <div class="stat l"><b id="sLearn">0</b><span>학습 중</span></div>
+          <div class="stat m"><b id="sDone">0</b><span>암기 완료</span></div>
+        </div>
+        <div class="ov"><span id="ovLabel">Day 1 진행률</span><span class="pill" id="ovPct">0%</span></div>
+        <div class="bar"><i id="ovBar"></i></div>
+        <div class="wlist" id="wlist"></div>
+        <div class="legend"><span><i class="dot"></i>안 함</span><span><i class="dot l"></i>학습 중</span><span><i class="dot m"></i>완료</span></div>
+        <button class="reset" id="resetBtn">학습 기록 초기화</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+<section id="screen" class="hidden">
+  <div class="top">
+    <button class="iconbtn" id="backBtn" aria-label="처음으로">←</button>
+    <h2 id="scTitle"></h2>
+    <span id="scRight"></span>
+  </div>
+  <div id="stage"></div>
+</section>
+</div>
+
+<script>
+(function(){const s=document.getElementById('stars');let h='';for(let i=0;i<46;i++){const z=Math.random()<.2?4:2+Math.random()*1.5;h+=`<i style="left:${Math.random()*100}%;top:${Math.random()*100}%;width:${z}px;height:${z}px;opacity:${.25+Math.random()*.6}"></i>`}s.innerHTML=h;})();
+
+const DAYS=[[["abandon", "버리다, 그만두다"], ["feature", "특징으로 하다, 특징, 특집기사"], ["colleague", "동료"], ["further", "촉진하다, 그 이상의, 게다가"], ["relieve", "완화시키다, 안심시키다"], ["specific", "명확한, 구체적인, 독특한"], ["constant", "변함없는, 불변의, 상수"], ["instrument", "기구, 도구, 악기"], ["range", "범위가 ~에 이르다, 범위, 영역"], ["aspect", "측면, 국면, 관점"], ["significant", "중요한, 의미심장한, 상당한, 현저한"], ["prize", "소중하게 여기다, 상"], ["reflect", "반사하다, 비추다, 반영하다"], ["obvious", "분명한, 명백한, 빤히 들여다보이는"], ["identify", "확인하다, 식별하다"], ["rate", "평가하다, 간주하다, 비율, 등급"], ["credit", "공로를 돌리다, 믿음, 외상"], ["stuff", "채워 넣다, 채우다, 틀어막다"], ["harry", "괴롭히다, 못살게 굴다, 황폐화시키다"], ["subtle", "미묘한, 미세한, 포착하기 어려운"], ["commercial", "상업의, 영리적인, 광고방송"], ["convention", "집회, 관습"], ["fright", "공포, 두려움"], ["promote", "촉진하다, 장려하다, 홍보하다, 진급시키다"], ["archaic", "구식의, 낡은"], ["precise", "정확한, 정밀한"], ["perspective", "원근법, 투시도, 관점"], ["phenomenon", "현상, 사건, 비범한 사람, 불가사의"], ["allocate", "할당하다, 배치하다"], ["reserve", "남겨두다, 예약하다, 비축, 매장량, 신중함, 내성적임"], ["frustrate", "실망시키다, 방해하다, 망치다"], ["objective", "객관적인, 목적, 목표"], ["agent", "대리인, 직원, 행위자, 동인"], ["manipulate", "잘 다루다, 조종하다, 조작하다"], ["financial", "재정의, 금융의"], ["valid", "근거가 확실한, 유효한, 효과적인"], ["phrase", "표현하다, 어구, 문구"], ["associate", "연상하다, 관련시키다, 교제하다, 동료"], ["inevitable", "피할 수 없는, 필연적인"], ["revise", "고치다, 수정하다, 개정하다"]], [["aggressive", "적극적인, 의욕적인, 공격적인, 침략적인"], ["virtual", "사실상의, 가상의"], ["derive", "유래하다, 이끌어 내다, 추론하다"], ["crucial", "결정적인, 중대한, 중요한"], ["eliminate", "제거하다, 없애다"], ["interpret", "해석하다, 이해하다, 번역하다"], ["procedure", "절차, 순서, 처리"], ["engage", "고용하다, 약속하다, 종사하다"], ["presence", "있음, 존재, 출석"], ["acknowledge", "인정하다, 시인하다"], ["dominant", "지배적인, 우세한, 두드러진"], ["enormous", "거대한, 엄청난"], ["moderate", "중간의, 보통의, 온건한, 절제하다, 조정하다"], ["prompt", "자극하다, 유발하다, 신속한"], ["desperate", "절망적인, 필사적인, 절박한"], ["transmit", "보내다, 옮기다"], ["distinctive", "독특한, 특색 있는"], ["metaphor", "은유, 비유, 상징"], ["complicate", "복잡하게 하다, 얽히게 하다"], ["genuine", "진짜의, 거짓이 아닌, 진심의"], ["institution", "학회, 단체, 제도, 제정"], ["disastrous", "재앙을 일으키는, 비참한"], ["obstacle", "장애, 방해"], ["verbal", "말의, 구두의"], ["analysis", "분석, 분해"], ["emerge", "떠오르다, 나타나다, 드러나다"], ["stroke", "치기, 뇌졸중, 쓰다듬다, 선을 긋다, 치다"], ["discipline", "규율, 훈련, 징벌, 학과, 훈련하다, 벌하다"], ["ancestor", "조상, 선조"], ["clan", "씨족, 일가, 집단"], ["resolve", "해결하다, 풀다, 결심하다, 결의, 의지"], ["restrict", "제한하다, 한정하다"], ["sequence", "연속, 순서"], ["vital", "중요한, 필수적인, 생명의, 활기찬"], ["evolve", "전개하다, 발전하다, 진화하다"], ["irritate", "짜증나게 하다, 자극하다"], ["preference", "선호, 편애, 우선권, 특혜"], ["tremendous", "거대한, 굉장한, 엄청나게 많은"], ["fatigue", "피로, 피로하게 하다"], ["retention", "보유, 유지, 기억"]], [["static", "정적인, 정지된"], ["assumption", "가정, 추정, 억측"], ["commitment", "책임, 위임, 약속, 헌신"], ["prospect", "예상, 기대, 전망"], ["reference", "언급, 참고, 추천인, 관련"], ["qualify", "자격을 주다, 한정하다"], ["blossom", "꽃, 개화, 꽃이 피다"], ["drain", "배수하다, 고갈시키다, 유출, 소모"], ["lessen", "줄이다, 줄다, 적게하다"], ["respective", "저마다의, 개개의"], ["soar", "높이 치솟다, 비상"], ["equilibrium", "평형, 균형, 평정"], ["auditory", "귀의, 청각의"], ["multiple", "다수의, 다양한, 배수"], ["prominent", "툭 튀어나온, 유명한, 탁월한"], ["resistant", "저항하는, 견디는"], ["evident", "명백한, 분명한"], ["depress", "낙담시키다, 누르다, 침체시키다"], ["intensify", "강해지다, 강화하다"], ["compensation", "상쇄, 보상(금)"], ["dismiss", "해고하다, 기각하다"], ["elaborate", "복잡한, 정교한, 정교하게 만들다, 자세히 말하다"], ["psychological", "심리적인, 심리학적인"], ["scent", "냄새, 향기, 후각, 냄새를 맡다, 냄새가 나다"], ["tempt", "유혹하다, 부추기다"], ["trace", "자취, 흔적, 추적하다, 거슬러 올라가다"], ["treasure", "소중히 하다, 높이 평가하다, 보물"], ["trigger", "발사하다, 일으키다, 방아쇠, 계기"], ["profound", "깊은, 심오한"], ["surgery", "수술, 외과"], ["conceal", "숨기다, 감추다"], ["literal", "글자 그대로의, 있는 그대로의"], ["alert", "방심하지 않는, 기민한, 경고하다, 경계 태세"], ["refund", "돌려주다, 변상하다, 환불, 반환"], ["sophisticated", "세련된, 교양 있는, 복잡한, 정교한"], ["currency", "통화, 화폐, 유통, 유행"], ["accommodate", "적응하다, 조정하다, 수용하다, 돌보다, 협조하다"], ["certificate", "자격증, 면허증, 증명서"], ["coordinate", "조정하다, 통합시키다"], ["draft", "초안, 원고, 통풍, 징병, 선발"]], [["extension", "확대, 확장, 증축, 내선"], ["extract", "뽑다, 추출하다, 추출물"], ["fierce", "사나운, 거친, 맹렬한"], ["steep", "가파른, 터무니없는, 적시다"], ["nerve", "신경, 용기, 뻔뻔스러움"], ["phase", "모습, 양상, 국면, 단계적으로 시행하다"], ["identical", "동일한, 똑같은, 일란성의"], ["stare", "응시하다, 노려보다, 응시"], ["sedentary", "주로 앉아서 지내는, 정주성의"], ["regulate", "규제하다, 조절하다"], ["supplement", "보충, 부록, 보충하다"], ["suspend", "매달다, 걸다, 중지하다, 정학시키다"], ["depreciate", "가치가 떨어지다, 평가 절하하다, 경시하다"], ["appliance", "전기 제품, 기구"], ["sublime", "숭고한, 고상한, 웅장한"], ["deteriorate", "악화시키다, 질을 떨어뜨리다, 쇠퇴하다"], ["grasp", "꽉 잡다, 이해하다"], ["illegal", "불법의, 비합법적인"], ["ingredient", "성분, 재료"], ["dedicate", "바치다, 헌신하다"], ["urge", "촉구하다, 재촉하다, 충동, 자극"], ["inherit", "물려받다, 상속받다"], ["originate", "생기다, 기원하다, 발명하다, 창시하다"], ["paralyze", "마비시키다, 무력하게 만들다"], ["recipient", "수취인, 그릇"], ["shrink", "줄어들다, 오그라들다, 움츠리다"], ["transaction", "집행, 업무, 거래, 매매"], ["expertise", "전문적 지식"], ["successive", "연속적인, 잇따르는"], ["inferior", "열등한, 더 못한, 하위의"], ["facilitate", "촉진하다, 수월하게 하다"], ["irrelevant", "관계가 없는, 부적절한, 타당하지 않은"], ["literary", "문학의, 문학적인"], ["distort", "비틀다, 왜곡하다"], ["optimal", "최상의"], ["rear", "기르다, 부양하다, 뒤"], ["skeptical", "회의적인, 의심 많은"], ["abstract", "추상적인, 요약, 발췌, 추출하다"], ["empirical", "경험적인, 경험상의"], ["ethnic", "인종의, 민족의"]], [["allowance", "용돈, 허락, 참작"], ["coverage", "방송 보도, 취재, 범위"], ["incorporate", "포함하다, 통합하다"], ["rationality", "합리성, 이치에 맞음"], ["distract", "산만하게 하다"], ["radical", "근본적인, 급진적인"], ["infer", "추론하다, 결론을 끌어내다"], ["reinforce", "강화하다, 증진시키다"], ["representative", "대표자, 전형적인, 대표하는"], ["virtue", "선행, 덕, 가치, 장점"], ["subordinate", "하위의, 부하, 종속시키다"], ["variation", "변화, 차이, 편차"], ["withdraw", "인출하다, 취소하다, 물러나게 하다"], ["characterize", "~의 특징을 나타내다"], ["dilute", "묽게 하다, 희석하다"], ["maintenance", "유지, 지속, 부양, 생계"], ["evoke", "불러일으키다, 일깨우다"], ["exaggerate", "과장하다"], ["infinite", "무한한, 막대한"], ["revelation", "폭로, 신의 계시"], ["magnify", "확대하다, 과장하다"], ["nurture", "키우다, 양육(하다), 영양을 공급하다, 사육"], ["vague", "모호한, 분명치 않은"], ["strive", "노력하다, 애쓰다"], ["privilege", "특권(을 주다)"], ["aesthetic", "미학적, 미학"], ["starvation", "굶주림, 아사"], ["avalanche", "눈사태, 쇄도(하다)"], ["meditation", "명상, 심사숙고"], ["forecast", "예측(하다), 예보(하다), ~의 전조가 되다"], ["inappropriate", "부적절한"], ["innate", "타고난, 본질적인"], ["intimate", "친밀한, 개인적인, 상세한, 암시하다"], ["kin", "친족, 친척, 동류"], ["martial", "전쟁의, 호전적인, 군대의"], ["niche", "벽감, 틈새, 적소, 꼭 맞는 자리"], ["refuge", "피난처, 도피처, 보호"], ["retrospect", "회상, 회고, 추억"], ["savage", "야만적인, 사나운, 잔인한, 야만인"], ["antecedent", "앞서는, 전례, 조상"]], [["visualize", "마음속에 그리다, 상상하다"], ["constitute", "구성하다, 만들어 내다, 제정하다, 설립하다"], ["ban", "금지하다, 금지(령)"], ["withstand", "저항하다, 버티다"], ["vulnerability", "상처받기 쉬움, 취약함"], ["declare", "선언하다, 단언하다"], ["affection", "애정, 호의"], ["remedy", "치료(약), 구제책, 치료하다, 구제하다"], ["immense", "거대한, 엄청난, 굉장한"], ["incline", "(마음을) 기울게 하다, 기울이다, 숙이다"], ["offspring", "(사람,동물의)자식, 새끼:자손"], ["infrastructure", "사회 기반 시설, 하부 구조"], ["reluctant", "꺼리는, 마지못해 하는"], ["innocent", "순진한, 결백한"], ["instruct", "가르치다, 교육하다, 명령하다, 지시하다"], ["infect", "감염시키다, (병을) 옮기다"], ["possess", "소유하다, 갖추다"], ["refine", "정제하다, 세련되게 하다"], ["integrate", "통합하다, 완전하게 하다"], ["exploit", "착취하다, 이용하다, 개발하다, 위업(공적)"], ["revenue", "수입, 세입"], ["seize", "붙잡다, 포착하다, 빼앗다, 몰수하다"], ["flatter", "아첨하다, 칭찬하다, 잘 보이게 하다"], ["stir", "휘젓다, 움직이다, 감동시키다, 혼란"], ["substitute", "대리인, 대역, ~으로 대체하다"], ["swell", "부풀(리)다, 팽창하다, 팽창, 증가"], ["simulate", "흉내 내다"], ["altitude", "고도, 높이"], ["deprive", "빼앗다, 박탈하다, 주지 않다"], ["discharge", "방출하다, 방전하다, 풀어주다, 해고하다"], ["disguise", "변장하다, 숨기다, 속이다, 변장, 가장"], ["corrupt", "부패하다, 매수하다"], ["patriot", "애국자"], ["disregard", "무시하다, 소홀히 하다, 무시, 경시"], ["domesticate", "길들이다, (습관 등을) 도입하다"], ["invariable", "변함없는, 불변의, 상수"], ["drastic", "철저한, 과감한, 급진적인, 강렬한"], ["devour", "삼키다, 게걸스레 먹다"], ["patronize", "애용하다, 후원하다, 잘난 체하다"], ["subsequent", "다음의, 이어서 일어나는"]], [["substantial", "상당한, 물질의, 실재하는, 중요한"], ["suburb", "도시 근교, 교외"], ["ridiculous", "웃기는, 터무니없는"], ["maneuver", "신중하게 다루다, 조종(하다), 책략"], ["portray", "묘사하다, 표현하다"], ["thrive", "번영하다, 잘 자라다"], ["sanction", "허가(하다), 인가(하다), 제재, 처벌"], ["align", "정렬하다, 조정하다"], ["awe", "두려움, 경외"], ["soothe", "달래다, 진정시키다, 위로하다"], ["disparity", "서로 다름, 불일치, 격차"], ["evaporate", "증발하다, 증발시키다, 사라지다"], ["indecision", "우유부단, 결단력 없음"], ["realm", "왕국, 국토, 영역, 범위"], ["furious", "격노한, 몹시 화가 난, 맹렬한, 광란의"], ["humiliate", "굴욕감을 주다, 창피를 주다"], ["affordable", "감당할 수 있는, 알맞은"], ["physiology", "생리학, 생리(기능)"], ["confer", "수여하다, 주다, 의논하다, 참조하다"], ["curb", "억제하다, 구속하다, 재갈, 억제, 연석"], ["endurance", "인내, 참을성, 지구력"], ["probe", "철저히 조사하다, 캐다, 탐사"], ["recess", "휴식, 휴업, 오지"], ["vigorous", "원기 왕성한, 활발한, 힘찬"], ["reciprocate", "보답하다, 보복하다, 교환하다"], ["inspection", "조사, 정밀 검사, 사찰"], ["retrieve", "되찾다, 회복하다"], ["solitary", "쓸쓸한, 고독한, 단 하나의, 유일한"], ["spectacular", "구경거리의, 장관의, 극적인"], ["weird", "이상한, 불가사의한"], ["weary", "피곤한, 지친, 싫증이 난, 지긋지긋한"], ["superficial", "표면의, 외부의, 얕은"], ["enthusiastic", "열렬한, 열광적인"], ["generous", "관대한, 풍부한, 비옥한"], ["convert", "바꾸다, 전환시키다"], ["collapse", "무너지다, 붕괴(하다)"], ["conform", "일치하다, 순응하다"], ["hierarchy", "계급제, 지배층"], ["insulate", "단열하다, 절연하다, 고립시키다, 보호하다"], ["forge", "날조하다, 위조하다, 만들어내다, 대장간"]], [["resort", "의지(하다), 호소(하다), 휴양지"], ["integral", "필수적인, 내장된, 완전한"], ["interfere", "방해하다, 간섭하다"], ["scope", "범위, 영역, 크기"], ["ritualize", "의식으로 행하다"], ["irrational", "이성이 없는, 불합리한"], ["intermediate", "중간의, 중재하다, 매개"], ["orient", "동양, 적응시키다, (동쪽으로) 향하게 하다"], ["fossil", "화석, 구식"], ["counterpart", "대응 관계에 있는 사람, 상대물"], ["proportion", "비율, 비례, 조화, 몫, 할당, 부분"], ["royalty", "사용료, 인세, 왕족, 왕권"], ["straightforward", "직접적인, 솔직한, 간단한, 쉬운, 분명한"], ["attentive", "주의 깊은, 세심한"], ["sincerity", "성실, 진실, 정직"], ["scheme", "계획, 음모, 책략, 조직"], ["tender", "부드러운, 상냥한"], ["undertake", "맡다, 착수하다, 시작하다"], ["parallel", "~와 평행하다, 평행선, 일치하는, 평행한"], ["intervention", "개입, 중재"], ["endeavor", "시도, 노력(하다)"], ["envision", "상상하다, 생각하다"], ["expire", "만료되다, 소멸하다, 죽다, 발산하다"], ["exclusive", "배척하는, 배타적인, 독점하는"], ["illuminate", "비추다, 밝히다, 깨우치게 하다"], ["intrigue", "호기심, 호기심을 불러일으키다, 음모, 계략"], ["notorious", "악명 높은"], ["outweigh", "~의 결점을 메우기에 충분하다, ~보다 무겁다"], ["overtake", "따라잡다, 앞지르다, 급습하다"], ["legitimate", "합법의, 적법한, 합리적인, 타당한"], ["prolific", "열매를 많이 맺는, 다산의, 비옥한"], ["sensible", "분별이 있는, 현명한"], ["rage", "분노, 격노, 격렬함, 맹위, 분노하다"], ["supervise", "감독(하다), 관리(하다)"], ["undermine", "약화시키다, 기초를 침식하다"], ["startle", "깜짝 놀라게 하다, 깜짝 놀라다"], ["strain", "긴장시키다, 무리하게 사용하다, 애쓰다, 노력(하다), 과로"], ["setback", "방해, 좌절, 실패, 역행, 역류"], ["pollinate", "꽃가루받이하다"], ["surge", "쇄도하다, 치솟다, 쇄도, 돌진, 급상승"]], [["vendor", "행상인, 노점상, 판매자, 자동판매기"], ["utter", "말하다, 발음하다, 완전한, 철저한"], ["surpass", "능가하다, 뛰어넘다"], ["deference", "복종, 존경, 경의"], ["sediment", "침전물, 앙금, 퇴적물"], ["acquisition", "습득, 횡재"], ["adverse", "반대의, 거스르는, 불리한, 불운한"], ["affirmative", "긍정적인, 적극적인"], ["barren", "불모의, 메마른, 결실이 없는"], ["candid", "솔직한, 숨김없는"], ["combustion", "연소, 발화, 산화"], ["communal", "공용의, 공공의, 공동체의"], ["disobedience", "반항, 불복종, 위반"], ["conserve", "보존하다, 보호하다, 유지하다"], ["console", "위로하다"], ["contagion", "전염병, 감염, 감화, 영향"], ["dialect", "방언, 사투리, 은어"], ["contempt", "경멸, 멸시, 모욕, 수치"], ["credibility", "신뢰성, 진실성"], ["crude", "날것의, 가공하지 않은, 대충의, 조잡한, 미숙한"], ["monetary", "화폐의, 금융의"], ["dissent", "반대하다, 의견을 달리하다, 반대(의견)"], ["diversify", "다양화하다"], ["downplay", "경시하다, 얕보다"], ["epic", "서사시의, 웅장한"], ["equanimity", "침착, 평정, 차분함"], ["fertility", "비옥함, 생식력"], ["fluency", "유창함, 달변"], ["formidable", "무서운, 가공할, 어려운, 경이로운"], ["hostile", "적대적인, 적개심을 가진"], ["humility", "겸손, 스스로 낮춤"], ["multitude", "군중, 다수, 수많음"], ["indispensable", "필수적인, 없어서는 안 되는"], ["infest", "들끓다, 창궐하다"], ["installment", "할부금의 1회분"], ["leakage", "샘, 누설, 누수"], ["naive", "순진한, 순박한, 잘 믿는"], ["liability", "책임, 의무, 부채, 빚, 불리함, 약점, ~하기 쉬움"], ["merger", "합병, 융합"], ["mobility", "움직이기 쉬움, 기동성, 사회적 유동성"]], [["pester", "괴롭히다, 성가시게 하다"], ["obscure", "흐릿하게 하다, 숨기다, 애매한"], ["deviate", "벗어나다, 일탈하다"], ["spiral", "나선형, 소용돌이"], ["peripheral", "주변의, 지엽적인, 중요하지 않은"], ["receptive", "잘 받아들이는, 수용성의, 감수성이 있는"], ["petition", "청원(하다), 탄원(하다)"], ["potent", "강력한, 힘센, 영향력 있는, 효능이 있는"], ["pronounced", "두드러진, 현저한, 분명한"], ["prophecy", "예언"], ["oblivion", "망각, 잊힘"], ["retreat", "후퇴(하다), 물러가다, 은퇴, 칩거"], ["resume", "재개하다, 다시 시작하다, 회복하다"], ["restless", "불안한, 차분하지 못한, 휴식이 없는"], ["rhetorical", "미사여구의, 과장된"], ["stale", "신선하지 않은, 진부한"], ["scenic", "경치가 좋은"], ["simultaneous", "동시에 일어나는"], ["spatial", "공간의, 우주의, 공간적인"], ["perish", "죽다,소멸하다,사라지다"], ["utilitarian", "실용적인, 실리의"], ["synthetic", "합성의, 인조의, 진짜가 아닌"], ["texture", "직물, 질감, 짜임새, 본질"], ["arbitrary", "임의의, 자의적인, 독단적인"], ["tolerance", "관용, 용인, 아량, 참음, 인내, 내성"], ["induce", "설득하다; 꾀다, 유도[유발]하다, 야기하다"], ["unencumbered", "장애물이 없는, 방해가 없는"], ["dimension", "치수, 크기, 차원"], ["assemble", "조립하다, 모으다"], ["theft", "도둑질, 절도"], ["awkward", "어색한, 서투른, 난처한, 불편한"], ["caution", "경계, 주의, 경고(하다)"], ["vanish", "사라지다, 없어지다"], ["explicit", "명백한, 뚜렷한, 솔직한, 노골적인"], ["hinder", "지연시키다, 막다, 방해하다"], ["implication", "암시, 함축"], ["impose", "부과하다, 지우다, 강요하다"], ["inhibit", "억제하다, 막다"], ["initiate", "시작하다, 일으키다, 전수하다"], ["erroneous", "잘못된, 틀린; 정도를 벗어난"]], [["medicinal", "약의, 약효가 있는"], ["negotiate", "협상하다, 교섭하다"], ["persist", "고집하다, 주장하다, 지속하다, 살아남다"], ["scarcity", "부족, 결핍, 희귀함"], ["profession", "(전문) 직업, 선언, 고백"], ["tease", "놀리다, 집적거리다, 괴롭히다"], ["presumable", "가정할 수 있는, 그럴듯한"], ["severe", "가혹한, 엄한, 심한, 맹렬한"], ["restraint", "규제, 구속, 자제, 절제"], ["stiff", "굳은, 단호한, 뻣뻣한"], ["subsidize", "보조금을 주다"], ["revenge", "복수(하다), 원수를 갚다"], ["termination", "종결, 결말, 끝, 종점"], ["violate", "위반하다, 범하다, 방해하다"], ["wreck", "난파선, 잔해, 난파시키다, 파괴하다"], ["adhere", "들러붙다, 고수하다, 집착하다"], ["establishment", "기관, 시설, 제도; 설립, 확립, 제정, 지배층, 기득권층, 기성 체제"], ["alleviate", "완화시키다, 경감하다"], ["abolish", "폐지하다, 없애다"], ["circulate", "돌다, 순환하다, 유포하다"], ["alternate", "번갈아서 발생하다, 대체의"], ["anchor", "고정시키다, 정박하다, 닻, 의지하는 것"], ["collision", "충돌, 대립"], ["celebrity", "유명인사, 명성"], ["worship", "숭배(하다), 존경(하다)"], ["crave", "갈망하다, 간청하다"], ["contemplate", "응시하다, 눈여겨보다, 명상하다, 심사숙고하다"], ["contract", "줄어들다, 수축하다, 계약하다, 계약서"], ["liberate", "자유롭게 하다, 해방하다, 석방하다"], ["disperse", "흩어지다, 분산하다, 퍼뜨리다, 확산시키다"], ["embed", "박다, 끼워 넣다"], ["entail", "수반하다, 일으키다"], ["fatality", "불의의 죽음, 사망자, 치사율, 운명, 숙명론"], ["fraud", "사기, 가짜, 사기꾼"], ["hesitant", "망설이는, 주저하는"], ["indefinite", "불명확한, 막연한, 애매한"], ["inflame", "불태우다, 흥분시키다, 자극하다"], ["inflate", "부풀리다, 과장하다"], ["divulge", "누설하다, 폭로하다"], ["internalize", "내면화시키다, 흡수하다"]], [["intrude", "침범하다, 방해하다"], ["liken", "비유하다, 비교하다"], ["contaminate", "더럽히다, 오염시키다"], ["momentary", "순간적인, 찰나의"], ["dignity", "위엄, 품위, 존엄성, 자존감"], ["pirate", "해적, 표절하다, 저작권을 침해하다, 약탈하다"], ["preoccupy", "몰두하게 하다, 선점하다"], ["linger", "오래 남아 있다, 꾸물거리다, 질질 끌다"], ["prevail", "만연하다, 지배하다, 능가하다, 이기다"], ["proponent", "제안자, 지지자, 옹호자"], ["refashion", "고쳐서 만들다, 개조하다"], ["regain", "되찾다, 회복하다, 복귀하다"], ["intertwine", "뒤얽히다, 엮다, 엮이다"], ["shrub", "관목, 키 작은 나무"], ["relocate", "이동하다, 재배치하다"], ["submerge", "잠수하다, 물에 잠기게 하다"], ["advent", "출현, 도래"], ["affluent", "부유한, 풍족한"], ["agenda", "과제, 의제, 비망록"], ["ally", "결합하다, 동맹하다, 동맹자, 동류"], ["anarchy", "무정부 상태, 무질서, 혼란"], ["suppress", "억압하다, 억제하다"], ["decent", "괜찮은, 제대로 된, 예의바른"], ["authenticate", "인증하다, 진짜임을 밝히다"], ["asymmetry", "부조화, 불균형, 비대칭"], ["apparatus", "장치, 기구"], ["barbarous", "야만적인, 미개한, 잔인한, 난폭한"], ["concur", "동의하다, 동시에 발생하다"], ["bland", "부드러운, 온화한, 개성 없는, 재미없는"], ["collaborative", "공동 제작의, 합작의, 협력의"], ["conviction", "확신, 신념, 유죄 판결"], ["charitable", "자비로운, 너그러운, 관대한"], ["complimentary", "칭찬하는, 찬사의, 무료의"], ["benevolent", "인자한, 자애로운"], ["configuration", "배열, 배치, 구성"], ["consensus", "의견 일치, 합의, 여론"], ["convergence", "한 점으로 모임, 집중, 수렴, 융합"], ["brutality", "잔인성, 야만성, 무자비함"], ["drawback", "결점, 문제점"], ["render", "만들다, 제공하다, 제시하다, 나타내다"]], [["clumsy", "어색한, 서투른"], ["arrogance", "오만, 거만, 건방짐"], ["defective", "결함이 있는, 불완전한"], ["beneficiary", "수혜자, (보험, 유산 등의) 수령인"], ["farsighted", "원시안의, 선견지명의"], ["definitive", "최종적인, 결정적인, 가장 확실한, 명확한"], ["degenerative", "퇴보하는, 퇴행성의"], ["stipulate", "규정하다, 명시하다, 조건으로 요구하다"], ["disproportionate", "불균형의, 어울리지 않는"], ["dormant", "잠자고 있는, 잠복하고 있는"], ["dreary", "황량한, 음울한, 따분한, 지루한"], ["durable", "내구성이 있는, 오래가는"], ["eligible", "자격이 있는, 적격의, 선출할 만한"], ["elusive", "잡히지 않는, 교묘히 피하는, 규정하기 어려운"], ["evade", "피하다, 모면하다, 잘 빠져나가다"], ["exert", "발휘하다, 노력하다, 애쓰다"], ["faculty", "능력, 교수진"], ["famine", "굶주림, 기근, 극심한 결핍"], ["demolition", "파괴, 폭파물, 타파"], ["formulate", "체계화하다, 고안하다, 만들어내다"], ["fraction", "부분, 파편, 소량, 분수"], ["frenzy", "극도의 흥분, 열광, 광란"], ["discernible", "인식할 수 있는"], ["dysfunctional", "기능 장애가 있는, 문제가 있는"], ["friction", "마찰, 불화, 의견 충돌"], ["fulfilling", "성취감을 주는, 만족스러운"], ["glimpse", "흘끗 봄, 흘끗 보다"], ["grin", "활짝 웃다, 씩 웃다, 싱긋 웃음"], ["heritage", "유산, 전통"], ["immortal", "죽지 않는, 불사의, 영원한"], ["impart", "주다, 전하다, 알리다"], ["impulsive", "충동적인, 즉흥적인"], ["distress", "고통, 괴로움, 고통스럽게 하다, 괴롭히다"], ["incompetent", "무능한, 무자격의, 쓸모없는"], ["indulge", "제멋대로 하다, 탐닉하다, (욕구를) 충족시키다"], ["insanity", "정신 이상, 광기, 미친 짓"], ["insecure", "확신하지 못하는, 자신이 없는, 불안정한, 위험한"], ["insufficient", "불충분한, 부족한, 능력 없는"], ["insurmountable", "극복할 수 없는, 넘을 수 없는"], ["introspective", "자기 성찰의, 자신을 돌이켜보는"]], [["intuitive", "직관적인, 직감하는"], ["inventive", "창의적인, 독창적인"], ["irreplaceable", "대신할 수 없는, 둘도 없는"], ["illiterate", "문맹의, 무식한"], ["inventory", "목록, 재고품"], ["meticulous", "꼼꼼한, 세심한, 좀스러운"], ["legacy", "유산, 유물"], ["leisurely", "느긋한, 한가한, 느긋하게"], ["mandatory", "명령의, 의무적인, 필수적인"], ["maternity", "어머니가 됨, 모성"], ["merchandise", "상품, 제품, 매매하다"], ["legible", "읽기 쉬운, 명료한"], ["municipal", "지방 자치의, 시립의"], ["needy", "몹시 가난한, 빈곤한, 애정에 굶주린"], ["negligence", "부주의, 태만, 소홀함"], ["notable", "주목할만한, 유명한"], ["imperceptible", "(너무 작아) 감지할 수 없는"], ["offensive", "불쾌한, 모욕적인, 화나게 하는, 적극적인"], ["onlooker", "구경꾼, 방관자, 목격자"], ["oppress", "억압하다, 괴롭히다"], ["orphanage", "고아원, 고아임"], ["optical", "눈의, 시각의, 빛의"], ["permanence", "영원성, 불변, 내구성"], ["litter", "쓰레기, 한배에서 난 새끼, 어질러놓다"], ["morale", "사기, 의욕"], ["paradox", "역설, 모순, 궤변"], ["pessimism", "비관, 비관주의"], ["pervasive", "만연하는, 스며드는, 침투성의"], ["proficient", "능숙한, 숙달된"], ["prosperous", "번영하는, 성공한, 순조로운"], ["pursue", "뒤쫓다, 추구하다"], ["reclaim", "개간하다, 간척하다, 갱생시키다, 되찾다"], ["recruit", "모집하다, 신입사원, 신병"], ["redundant", "남아도는, 중복의, 불필요한"], ["remnant", "나머지, 남은 것, 자취"], ["reign", "지배하다, 통치하다, 지배(권)"], ["replicate", "반복하다, 복제하다"], ["respiratory", "호흡의, 호흡기관의"], ["rigorous", "엄격한, 엄밀한, 혹독한"], ["slender", "날씬한, 가느다란, 빈약한"]], [["stereotype", "고정관념, 정형화하다"], ["speculate", "추측하다, 사색하다, 투기하다"], ["spontaneity", "자발성, 자연스러움"], ["sneak", "살금살금 들어오다, 훔치다, 슬쩍하다"], ["renowned", "유명한, 명성 있는"], ["solidarity", "연대, 결속, 단결"], ["tedious", "지루한, 싫증 나는"], ["stern", "엄격한, 단호한, 가차 없는"], ["subscribe", "서명하다, 동의하다, 구독하다, 가입하다, 기부하다"], ["subtract", "빼다, 삭감하다"], ["suspicious", "의심이 많은, 잘 믿지 않는, 수상한"], ["susceptible", "민감한, 예민한;영향을 받기 쉬운, 여지가 있는, 허용하는"], ["temperament", "기질, 성질, 체질"], ["temporal", "(특정) 시간의, 일시적인, 현세의, 세속적인"], ["testimony", "증거, 증명, 증언"], ["transition", "변형, 이행, 과도기"], ["underestimate", "과소평가하다, 경시하다"], ["underpin", "보강하다, 뒷받침하다, 지지하다"], ["unpaved", "포장하지 않은"], ["urgency", "긴급, 위급, 절박함"], ["vegetation", "초목, 식물"], ["viable", "생존 가능한, 실행 가능한, 실용적인"], ["verification", "확인, 검증, 증명"], ["vie", "다루다, 겨루다, 경쟁하다"], ["stride", "큰 걸음, 전진, 성큼성큼 걷다"], ["unimpeded", "가로막는 것이 없는, 방해받지 않는"], ["adjacent", "인접한, 붙어 있는, 근처의"], ["withhold", "보류하다, 억누르다, 억제하다"], ["ambiguous", "모호한, 두 가지 뜻을 지닌"], ["approval", "찬성, 승인, 인정"], ["assess", "평가하다, (세금을)부과하다"], ["assurance", "확신, 보증, 확언"], ["complementary", "상호 보완적인, 보충하는"], ["comprise", "포함하다, 구성되다(of)"], ["outdo", "~을 능가하다, ~보다 뛰어나다"], ["conceive", "상상하다, 마음에 품다"], ["confine", "한정하다, 가두다"], ["decay", "부패하다, 쇠퇴하다, 부패, 쇠퇴"], ["differentiate", "구별하다, 차별하다"], ["dispose", "처리하다, 배치하다"]], [["equivalent", "동등한, 동등한 것"], ["erode", "침식하다, 부식하다"], ["greed", "탐욕"], ["implementation", "이행, 실행"], ["implicit", "함축적인, 내포된"], ["prohibition", "금지"], ["migratory", "이동[이주]하는"], ["missionary", "선교[전도]사"], ["modesty", "겸손, 정숙"], ["ornamental", "장식의"], ["postpone", "연기하다, 뒤로 미루다"], ["premise", "전제, 전제하다"], ["quote", "인용하다, 예로 들다"], ["rejoice", "크게 기뻐하다"], ["intrinsic", "본질적인, 내재하는, 고유한"], ["preservation", "보존, 보관"], ["regime", "정치 제도, 정권"], ["ripen", "익다, 숙성하다"], ["compromise", "타협하다, 손상시키다, 타협, 화해"], ["loyal", "충성스러운, 성실한"], ["specify", "상술하다, 구체적으로 말하다"], ["tame", "길들이다, 길들인"], ["unattainable", "도달할 수 없는"], ["undeserved", "받을 자격이 없는, 부당한"], ["unparalleled", "비할[견줄] 데 없는, 유례없는"], ["abound", "많이 있다, 풍부하다"], ["utilize", "이용하다"], ["vain", "자만심이 강한, 헛된"], ["exemplify", "예시[실증]하다"], ["accord", "일치하다, 조화되다, 일치, 합의"], ["addictive", "중독성의"], ["authorize", "권한을 부여하다, 허가하다, 인정하다"], ["belittle", "과소평가하다, 얕보다"], ["besiege", "둘러싸다, 포위하다"], ["compatible", "양립할 수 있는, 일치하는, 모순 없는; 호환이 되는"], ["chronic", "만성적인, 습관적인"], ["clinical", "임상적인, 분석[객관]적인"], ["covert", "비밀의, 숨겨진"], ["cram", "억지로 쑤셔 넣다, 벼락치기하다"], ["unprecedented", "전례가 없는"]], [["degrade", "(가치, 지위를) 떨어뜨리다, 낮추다"], ["designate", "가리키다, 나타내다, 지정하다"], ["dictate", "받아쓰게 하다, 명령하다, 명령"], ["decode", "암호를 풀다"], ["anatomy", "해부[분석], 해부학, 구조[몸]"], ["epidemic", "유행(병), 전염병"], ["erupt", "분출하다, 폭발하다"], ["figurative", "비유적인"], ["flaw", "흠, 결점"], ["fleeting", "어느덧 지나가는, 순식간의"], ["fortify", "강화하다, 굳히다"], ["immune", "면역이 된, 면제된"], ["impair", "해치다, 손상시키다"], ["incur", "초래하다, 발생시키다"], ["inhabitant", "거주자"], ["inscribe", "새기다, 파다"], ["invade", "침입하다"], ["irrigate", "물을 대다, 관개하다"], ["mourn", "슬퍼하다, 애도하다"], ["oblige", "의무적으로 시키다, 은혜를 베풀다"], ["prescribe", "처방하다, 지시하다"], ["refute", "반박하다"], ["regressive", "후퇴[퇴보]하는"], ["resent", "분개하다"], ["introvert", "내향적인 사람"], ["dissolve", "녹이다"], ["postulate", "가정하다, 가정"], ["localize", "국한시키다"], ["stabilize", "안정[고정]시키다"], ["stink", "악취를 풍기다, 악취"], ["stroll", "거닐다, 산책하다, 산책"], ["surplus", "과잉, 잉여"], ["tenant", "세입자, 임차인"], ["thrust", "세게 밀다, 밀치다"], ["unanimous", "만장일치의"], ["validate", "입증하다, 승인하다"], ["tyrant", "폭군, 독재자"], ["confirm", "확인하다, 굳히다"], ["constrain", "강요하다, 억제하다, 속박[감금]하다"], ["preliminary", "예비의, 준비의"]], [["stance", "자세, 입장, 태도"], ["velocity", "속도, 회전율"], ["nomadic", "유목(민)의"], ["deform", "모양을 훼손하다, 변형시키다"], ["superstitious", "미신의"], ["conscientious", "양심적인, 성실한"], ["override", "뒤엎다, 압도하다"], ["perspiration", "땀, 노력"], ["precede", "선행하다, 앞서다"], ["attribute", "~의 탓으로 돌리다, 속성, 특성"], ["deliberate", "의도적인, 신중한, 숙고하다"], ["obstruct", "막다, 방해하다"], ["flammable", "가연성의, 불붙기 쉬운"], ["testify", "증명하다, 증언하다"], ["lease", "임대, 임대하다"], ["encompass", "포함하다, 망라하다, 에워[둘러]싸다"], ["proclaim", "선언하다, 명시하다"], ["impoverish", "가난하게 하다, 저해시키다"], ["aversion", "혐오, 반감, 싫은 것"], ["cumulative", "누적되는"], ["enforce", "시행하다, 집행하다"], ["contradict", "부정하다, 모순되다"], ["interrupt", "중단하다"], ["augment", "증가시키다"], ["prestige", "명성, 인기, 위신"], ["behold", "주시하다, 바라보다"], ["applicable", "적용할 수 있는, 적절한, 타당한"], ["proactive", "앞서서 주도하는"], ["compelling", "강력한, 설득력 있는"], ["extravagant", "낭비하는, 사치스러운, 지나친"], ["cognitive", "인식의"], ["tact", "감각, 재치"], ["expel", "내쫓다, 제명하다"], ["truce", "휴전, 정전"], ["reconcile", "화해하다, 중재하다"], ["supreme", "최고의"], ["inexhaustible", "고갈되지 않는, 지칠 줄 모르는"], ["summon", "소환하다"], ["poise", "침착, 평형, 평형을 유지하다"], ["stifle", "숨 막히게 하다, 억압하다"]], [["deadlock", "교착 상태, 막다른 골목, 교착 상태가 되다[되게 하다]"], ["omission", "생략, 빠뜨림"], ["tactic", "전술, 술책"], ["aboriginal", "토착의, 원주민의"], ["indignant", "분개한, 성난"], ["prioritize", "우선시키다, 우선순위를 매기다"], ["desert", "저버리다, 도망가다"], ["deceptive", "속이는, 현혹시키는"], ["sojourn", "체류하다, 체류"], ["brag", "자랑하다, 자랑"], ["grievous", "비통한, 심한, 가혹한"], ["impatience", "조급함, 참을 수 없음"], ["snore", "코를 골다, 코 골기"], ["hospitality", "환대, 후대"], ["captive", "포로의, 사로잡힌, 포로"], ["bureaucratize", "관료화하다, 관료 체제로 만들다"], ["condense", "농축하다, 요약하다"], ["elicit", "이끌어 내다, 유도하다"], ["nutritious", "영양분이 많은"], ["quiver", "떨리다, 진동"], ["evacuate", "비우다, 피난시키다"], ["electoral", "선거의"], ["authoritarian", "권위적인"], ["dreadful", "굉장히 무서운, 몹시 싫은"], ["disdain", "경멸하다, 경멸"], ["sentiment", "의견, 생각, 감정, 정서"], ["causal", "인과 관계의"], ["seductive", "유혹적인, 매력적인"], ["relish", "맛, 풍미, 음미하다"], ["indigenous", "토착의"], ["condemn", "비난하다, 유죄판결을 내리다"], ["dictator", "독재자, 지배자"], ["extinguish", "(불을) 끄다, 소멸시키다"], ["criterion", "표준, 척도"], ["throne", "왕좌, 왕위"], ["convince", "설득하다, 확신시키다"], ["freight", "화물"], ["imperative", "긴급한, 중요한, 필수적인, 명령[의무]"], ["resourceful", "재주가 있는, 자원이 풍부한"], ["ingratitude", "은혜를 모름, 배은망덕"]], [["revolve", "회전하다, 돌다"], ["shabby", "초라한, 비열한"], ["certify", "증명하다"], ["assert", "단언하다, 주장하다"], ["disillusion", "환상을 깨뜨리다, 환멸, 각성"], ["comprehensive", "포괄적인, 종합적인"], ["inhale", "숨을 들이쉬다"], ["segregate", "분리하다, 차별하다"], ["excavate", "파다, 발굴하다"], ["sewage", "오물"], ["marital", "결혼의, 부부의"], ["tilt", "기울다, 기울기"], ["deploy", "배치하다, 전개하다"], ["intimidate", "겁주다, 협박하다"], ["disjoin", "떼어놓다, 분리시키다"], ["contend", "다투다, 경쟁하다"], ["inverse", "역의, 반대의, 거꾸로 된"], ["catalyst", "촉매, 자극제, 계기"], ["altruistic", "이타적인"], ["posture", "자세, 태도, 입장"], ["intact", "온전한, 손상되지 않은"], ["immerse", "담그다, 가라앉히다, 몰두시키다"], ["traverse", "가로지르다, 횡단하다"], ["pious", "경건한, 신앙심이 깊은"], ["savor", "맛보다, 음미하다, 맛"], ["verse", "운문, 시"], ["strangle", "(목)조르다, 질식시키다"], ["hostage", "인질, 담보"], ["rash", "경솔한, 성급한, 지각없는"], ["pledge", "맹세하다, 서약하다, 맹세, 서약"], ["inconsistent", "일관성 없는, 모순된"], ["traitor", "배신자, 반역자"], ["unfounded", "근거 없는"], ["connotation", "암시, 함축적 의미"], ["marginalize", "소외시키다"], ["legislature", "입법부, 국회"], ["retort", "반박하다, 반박"], ["plead", "간청하다, 변명하다"], ["grim", "엄한, 험악한"], ["overwhelm", "압도하다, 당황하게 하다"]], [["frail", "연약한, 깨지기 쉬운"], ["subside", "가라앉다, 침몰하다"], ["perseverance", "인내, 끈기"], ["artisan", "공예가, 장인"], ["adhesive", "점착성의, 접착제"], ["acquaint", "숙지시키다, 알게 하다"], ["renovate", "새것으로 만들다, 수리하다"], ["satiate", "충분히 만족시키다, 물리게 하다"], ["proposition", "진술, 주장, 명제, 제안"], ["congest", "붐비게 하다, 가득 채우다"], ["disprove", "틀렸음을 입증하다, 반박하다"], ["neutralize", "중립화하다, 상쇄하다"], ["segment", "부분, 조각, 나누다"], ["masculine", "남자의, 남성적인"], ["recurrent", "되풀이되는, 재발하는"], ["ponder", "깊이 생각하다, 숙고하다"], ["impenetrable", "들어갈 수 없는, 이해할 수 없는"], ["pregnant", "임신한"], ["serenity", "고요함, 평온함"], ["hypothesize", "가설을 세우다"], ["instill", "주입하다, 스며들게 하다"], ["despise", "경멸하다, 혐오하다"], ["eradicate", "뿌리 뽑다, 근절하다"], ["venue", "현장, 발생지, 장소"], ["scant", "불충분한, 부족한"], ["jury", "배심원단"], ["compound", "악화시키다, 혼합하다, 혼합물"], ["indiscriminate", "무차별적인"], ["subdue", "진압하다, 억누르다"], ["confide", "신뢰하다, 털어놓다"], ["emphatic", "강조하는, 단호한"], ["incidence", "발생, 발생률"], ["modification", "변경, 조절"], ["polarize", "양극화하다, 편향하다"], ["impartial", "공정한, 치우치지 않은"], ["attune", "조율하다, 맞추다"], ["ignorant", "무식한, 모르는"], ["involuntary", "자기도 모르게 하는, 마지못해 하는"], ["inflict", "가하다, 괴롭히다"], ["pretense, pretence", "겉치레, 가장"]], [["perpetuate", "영속시키다, 불멸하게 하다"], ["hygienic", "위생적인"], ["populate", "~에 거주하다, 차지하다"], ["ascend", "오르다, 상승하다"], ["equity", "공평함"], ["sarcastic", "빈정대는, 풍자적인"], ["shiver", "떨다, 떨림"], ["devastate", "황폐화시키다, 철저히 파괴하다"], ["casualty", "사상자, 희생자"], ["refer", "언급하다, 보내다, 귀속되다"], ["detract", "손상시키다, 헐뜯다"], ["temperate", "온화한, 절제된"], ["punctuate", "구두점을 찍다, 중단시키다"], ["senate", "상원, 의회"], ["stubborn", "고집 센, 완고한"], ["mischievous", "짓궂은, 해를 끼치는"], ["absurdity", "불합리, 모순, 어리석음"], ["entrench", "참호를 파다, 확립하다"], ["snob", "속물"], ["cohesive", "응집성의, 결합력이 있는"], ["prudence", "현명함, 분별, 신중"], ["demanding", "힘든, 고된, 요구가 많은"], ["autonomous", "자치의, 자율적인"], ["precept", "지침, 가르침"], ["shudder", "떨다, 몸서리치다, 떨림"], ["tenure", "임차, 보유"], ["sanitation", "공중위생"], ["ingenious", "독창적인, 영리한"], ["tread", "밟다, 발걸음"], ["propagate", "보급하다, 퍼뜨리다, 선전하다, 번식[증식]시키다"], ["protagonist", "주인공, 주역, 주창자"], ["itinerary", "여행 스케줄"], ["courteous", "예의 바른, 정중한"], ["divert", "딴 데로 돌리다, 전환하다"], ["convict", "유죄를 선고하다, 죄수"], ["disruption", "분열, 혼란"], ["fluctuate", "오르내리다, 동요하다"], ["slaughter", "도살, 도살하다, 학살하다"], ["obsession", "강박 관념"], ["allure", "유인하다, 유혹"]], [["dehydrate", "건조시키다, 탈수 상태가 되다"], ["instigate", "부추기다, 선동하다"], ["coward", "겁쟁이, 비겁자"], ["vocation", "직업, 소명"], ["compassionate", "동정심이 많은, 인정 많은"], ["trivial", "사소한, 하찮은, 평범한, 진부한"], ["rustic", "시골뜨기, 촌놈, 소박한"], ["exhort", "강력히 권하다, 충고하다"], ["aviation", "비행"], ["anonymity", "익명"], ["inflexible", "구부릴 수 없는, 경직된"], ["versatile", "다재다능한, 만능의"], ["conducive", "도움이 되는, 기여하는"], ["sermon", "설교, 훈계"], ["spoilage", "손상, 부패"], ["yearn", "갈망하다"], ["triumphant", "크게 승리한, 의기양양한"], ["monk", "수도자"], ["fragrance", "향기, 향수"], ["monopoly", "독점"], ["decompose", "분해[부패]하다"], ["inaccessible", "접근하기 어려운"], ["prevention", "예방, 방해"], ["mundane", "지상[현세]의, 평범한, 재미없는"], ["hypocritical", "위선의, 위선적인"], ["obese", "비만인"], ["compulsory", "강제적인, 의무[필수]적인"], ["duplicate", "복제하다, 복제품"], ["refrain", "삼가다, 그만두다, 후렴구"], ["detached", "떨어져 있는, 공평한"], ["funeral", "장례식"], ["cliché", "상투적인 말, 틀에 박힌"], ["repent", "후회하다"], ["efficacy", "효능, 효력"], ["layman", "문외한, 평신도"], ["prolong", "늘리다, 연장하다"], ["thwart", "좌절시키다, 방해하다"], ["empathize", "공감하다, 감정이입하다"], ["plantation", "((아)열대 지방의 대규모)농장, 농원"], ["gnaw", "갉아먹다, 괴롭히다"]], [["temper", "성질, 기질, 조절하다"], ["transcend", "초월하다, 능가하다"], ["obstinate", "완고한"], ["stingy", "인색한, 부족한"], ["lurk", "숨다, 잠복하다"], ["elated", "의기양양한, 마냥 신난"], ["sober", "술 취하지 않은, 술을 깨게 하다"], ["implore", "애원[간청, 탄원]하다"], ["conquest", "정복, 획득"], ["irreversible", "돌이킬 수 없는, 취소할 수 없는"], ["strand", "좌초시키다, 오도 가도 못하게 하다, 가닥[올,줄]"], ["ample", "풍부한, 넓은"], ["underlying", "근본적인, 아래에 놓여 있는"], ["analogous", "유사한, 비슷한"], ["discrepancy", "괴리, 차이, 불일치"], ["inadequate", "불충분한, 부적당한"], ["justification", "정당화, 변명"], ["slack", "느슨한, 느슨함, 처짐"], ["conclusive", "결정적인, 명확한"], ["dispense", "분배하다, ~없이 지내다"], ["plunder", "강탈하다, 횡령하다"], ["rebel", "반란자, 반란을 일으키다"], ["coincide", "동시에 일어나다, 일치하다"], ["crumble", "가루가 되다, 부서지다"], ["deplete", "고갈시키다, 비우다"], ["catastrophe", "대참사, 파국"], ["torture", "고문하다, 괴롭히다, 고문"], ["mutate", "돌연변이하다"], ["tangle", "얽힘, 혼란, 얽히게 하다"], ["reunify", "재통일하다"], ["transparent", "투명한, 명백한"], ["germinate", "싹트다, 성장하다"], ["mortgage", "저당, 저당 잡히다"], ["inquisitive", "호기심이 강한"], ["reproach", "비난, 비난하다"], ["obsolete", "구식의, 더 이상 쓸모없는"], ["riot", "폭동, 폭동을 일으키다"], ["nominal", "명목상의, 이름뿐인"], ["betrayal", "배신"], ["publicize", "널리 알리다, 광고하다"]], [["sniff", "코를 킁킁거리다, 냄새맡다"], ["splendid", "화려한, 훌륭한"], ["unorthodox", "비정통적인[이단의]"], ["detest", "혐오하다"], ["sway", "흔들리다, 흔들림, 동요"], ["engross", "몰두시키다, (관심을) 빼앗다"], ["delusion", "현혹, 망상"], ["transplant", "이식하다, 이식"], ["improvise", "즉석에서 짓다[노래, 연주하다]"], ["controversial", "쟁점[논란]이 되는"], ["predicate", "단정하다, 근거를 두다"], ["overturn", "뒤집다, 전복하다"], ["manifestation", "명시, 표명, 출현"], ["consecutive", "연속적인, 앞뒤가 맞는"], ["dispatch", "급파하다, 신속히 처리하다, 급파"], ["bewitch", "홀리다, 넋을 빼앗다"], ["lateral", "옆의, 측면의"], ["contour", "등고선, 윤곽(선)"], ["conceit", "자부심, 자만심"], ["heredity", "유전, 유전적 특징"], ["pungent", "자극적인, 신랄한"], ["vicious", "나쁜, 악랄한"], ["preach", "설교하다, 전도하다"], ["punctuality", "시간 엄수, 정확함"], ["provocative", "자극적인, 화나게 하는"], ["discretion", "선택의 자유, 재량(권), 사려분별"], ["rehabilitation", "갱생[재활], 회복"], ["bewilder", "당황하게 하다, 어리둥절하게 하다"], ["stagger", "비틀거리다, 흔들리다, 깜짝 놀라게 하다"], ["ingest", "섭취하다, 받아들이다"], ["predisposed", "~하기 쉬운 경향이 있는"], ["fabricate", "만들다, 제작하다, 위조하다"], ["composed", "침착한, 평온한"], ["offset", "상쇄하다, 상쇄"], ["outlaw", "불법화하다, 금지하다"], ["stout", "뚱뚱한, 튼튼한, 단호한"], ["metabolism", "신진 대사"], ["plausible", "그럴듯한"], ["stumble", "발부리가 걸리다, (말을)더듬다"], ["self-contained", "자급자족인, 말수가 적은"]]];
+let WORDS=[];
+function loadDay(n){WORDS=DAYS[n-1].map(([en,ko],i)=>({id:i,en,ko}));}
+const norm=s=>s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+function isAns(given,w){const g=norm(given);return w.en.split(',').some(v=>norm(v)===g);}
+
+const KEY='wmh-day1-v1';
+let S={hist:{},star:[],dir:'en',set:'all',best:{},day:1};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s) S=Object.assign(S,s);}catch(e){}
+['match','blast','blocks','gems'].forEach(k=>{if(S.best[k]!=null&&S.best['1'+k]==null){S.best['1'+k]=S.best[k];delete S.best[k];}});
+function save(){S.updated=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(typeof cloudPush==='function')cloudPush();}
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=(arr,n,exclude)=>shuffle(arr.filter(x=>x!==exclude)).slice(0,n);
+
+function record(w,ok){const h=S.hist[w.en]||[];h.push(ok?1:0);S.hist[w.en]=h.slice(-2);save();}
+function status(w){const h=S.hist[w.en];if(!h||!h.length)return 'n';return (h.length===2&&h[0]&&h[1])?'m':'l';}
+function pool(){if(S.set==='star'){const p=WORDS.filter(w=>S.star.includes(w.en));if(p.length>=4)return p;}return WORDS;}
+function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
+function toggleStar(en){const i=S.star.indexOf(en);i<0?S.star.push(en):S.star.splice(i,1);save();}
+
+/* ---------- home ---------- */
+function dayPct(n){const ws=DAYS[n-1];let p=0;ws.forEach(([en])=>{const h=S.hist[en];if(h&&h.length){p+=(h.length===2&&h[0]&&h[1])?1:.5;}});return Math.round(p/ws.length*100);}
+function renderDays(){
+  $('#dayGrid').innerHTML=DAYS.map((_,i)=>{const n=i+1,p=dayPct(n);
+    return `<button class="daybtn${n===S.day?' on':''}${p===100?' full':''}" data-day="${n}" aria-pressed="${n===S.day}"><b>${n}</b><span class="mini"><i style="width:${p}%"></i></span><small>${p}%</small></button>`}).join('');
+}
+function setDay(n,push){n=Math.max(1,Math.min(DAYS.length,n|0));S.day=n;save();loadDay(n);
+  const sw=S.star.filter(e=>WORDS.some(w=>w.en===e));if(S.set==='star'&&sw.length<4){S.set='all';save();}
+  if(push){try{history.replaceState(null,'','#day-'+n)}catch(e){location.hash='day-'+n}}
+  renderHome();}
+function renderHome(){
+  document.title='VOCAP · Day '+S.day;
+  $('#dayTitle').textContent='Day '+S.day;$('#ovLabel').textContent='Day '+S.day+' 진행률';
+  $('#prevDay').disabled=S.day===1;$('#nextDay').disabled=S.day===DAYS.length;
+  renderDays();
+  let c={n:0,l:0,m:0};
+  $('#wlist').innerHTML=WORDS.map(w=>{const s=status(w);c[s]++;const st=S.star.includes(w.en);
+    return `<div class="wrow"><span class="dot ${s}"></span><span class="en">${esc(w.en)}</span><span class="ko">${esc(w.ko)}</span><button class="star" data-star="${esc(w.en)}" aria-pressed="${st}" aria-label="별표">${st?'★':'☆'}</button></div>`}).join('');
+  $('#sNone').textContent=c.n;$('#sLearn').textContent=c.l;$('#sDone').textContent=c.m;const pct=Math.round((c.m+c.l*.5)/WORDS.length*100);$('#ovPct').textContent=pct+'%';$('#ovBar').style.width=pct+'%';
+  document.querySelectorAll('#dirSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dir===S.dir));
+  document.querySelectorAll('#setSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.set===S.set));
+}
+$('#wlist').addEventListener('click',e=>{const b=e.target.closest('[data-star]');if(!b)return;toggleStar(b.dataset.star);renderHome();});
+$('#dirSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.dir=b.dataset.dir;save();renderHome();});
+$('#setSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.set==='star'&&S.star.filter(e=>WORDS.some(w=>w.en===e)).length<4){alert('이 Day에서 별표를 4개 이상 표시하면 별표 단어만 공부할 수 있어요. 아래 단어 목록에서 ☆를 눌러 주세요.');return;}
+  S.set=b.dataset.set;save();renderHome();});
+$('#resetBtn').addEventListener('click',()=>{if(confirm('학습 기록을 모두 지울까요? 별표는 남겨 둬요.')){S.hist={};S.best={};save();renderHome();}});
+
+let cleanup=null;
+function go(mode){
+  if(cleanup){cleanup();cleanup=null;}
+  if(!mode){$('#screen').classList.add('hidden');$('#home').classList.remove('hidden');renderHome();window.scrollTo(0,0);return;}
+  $('#home').classList.add('hidden');$('#screen').classList.remove('hidden');$('#scRight').innerHTML='';window.scrollTo(0,0);
+  ({cards,learn,test,match,blast,blocks,gems})[mode]();
+}
+document.querySelector('.modes').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go);});
+$('#backBtn').addEventListener('click',()=>go(null));
+const stage=()=>$('#stage');
+const title=t=>$('#scTitle').textContent=t;
+const front=w=>S.dir==='en'?w.en:w.ko;
+const backOf=w=>S.dir==='en'?w.ko:w.en;
+
+/* ---------- 낱말카드 ---------- */
+function cards(list){
+  title('낱말카드');
+  let deck=list||shuffle(pool()), i=0, known=[], unknown=[], flipped=false;
+  const st=stage();
+  function draw(){
+    if(i>=deck.length){
+      st.innerHTML=`<div class="panel done"><h3>한 바퀴 끝!</h3><p>알아요 ${known.length}개, 몰라요 ${unknown.length}개</p>
+      <div class="row">${unknown.length?'<button class="btn" id="again">모르는 카드만 다시</button>':''}<button class="btn ghost" id="all">전체 다시</button></div></div>`;
+      $('#again')&&($('#again').onclick=()=>cards(shuffle(unknown)));
+      $('#all').onclick=()=>cards();return;
+    }
+    const w=deck[i];flipped=false;const st2=S.star.includes(w.en);
+    const fEn=S.dir==='en';
+    st.innerHTML=`<div class="tally"><span class="u">몰라요 ${unknown.length}</span><span>${i+1} / ${deck.length}</span><span class="k">알아요 ${known.length}</span></div>
+    <div class="bar"><i style="width:${i/deck.length*100}%"></i></div>
+    <div class="fcwrap"><div class="fc" id="fc" tabindex="0" role="button" aria-label="카드 뒤집기">
+      <div class="face"><div class="${fEn?'big-en':'big-ko'}">${esc(front(w))}</div>
+        <div class="corner"><button class="star" id="spk" aria-label="발음 듣기">🔊</button><button class="star" id="stb" aria-pressed="${st2}" aria-label="별표">${st2?'★':'☆'}</button></div>
+        <div class="hint">눌러서 뒤집기</div></div>
+      <div class="face back"><div class="${fEn?'big-ko':'big-en'}">${esc(backOf(w))}</div><div class="hint">${fEn?esc(w.en):''}</div></div>
+    </div></div>
+    <div class="row"><button class="btn bad" id="no">몰라요</button><button class="btn good" id="yes">알아요</button></div>
+    <p class="note" style="margin-top:12px;text-align:center">키보드: 스페이스 뒤집기, ← 몰라요, → 알아요. 카드를 옆으로 밀어도 돼요.</p>`;
+    const fc=$('#fc');
+    fc.onclick=e=>{if(e.target.closest('.star'))return;flip();};
+    $('#spk').onclick=()=>speak(w.en);
+    $('#stb').onclick=e=>{toggleStar(w.en);const on=S.star.includes(w.en);e.target.textContent=on?'★':'☆';e.target.setAttribute('aria-pressed',on);};
+    $('#no').onclick=()=>answer(false);$('#yes').onclick=()=>answer(true);
+    let sx=null;
+    fc.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
+    fc.addEventListener('touchend',e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>70)answer(dx>0);});
+  }
+  function flip(){flipped=!flipped;$('#fc').classList.toggle('flip',flipped);if(flipped&&S.dir==='ko')speak(deck[i].en);}
+  function answer(ok){const w=deck[i];record(w,ok);(ok?known:unknown).push(w);
+    const fc=$('#fc');fc.classList.remove('flip');fc.classList.add(ok?'swipe-r':'swipe-l');setTimeout(()=>{i++;draw();},220);}
+  function key(e){if(!$('#fc'))return;if(e.code==='Space'){e.preventDefault();flip();}else if(e.key==='ArrowLeft')answer(false);else if(e.key==='ArrowRight')answer(true);}
+  document.addEventListener('keydown',key);cleanup=()=>document.removeEventListener('keydown',key);
+  draw();
+}
+
+/* ---------- 학습하기 ---------- */
+function learn(){
+  title('학습하기');
+  const words=shuffle(pool());
+  const lv={};words.forEach(w=>lv[w.en]=0); // 0 객관식, 1 쓰기, 2 완료
+  let queue=words.slice(),cur=null;
+  const st=stage();
+  function bar(){const d=words.filter(w=>lv[w.en]===2).length,h=words.filter(w=>lv[w.en]===1).length;
+    return `<div class="tally"><span>익숙해짐 ${h}</span><span>완료 ${d} / ${words.length}</span></div><div class="bar"><i style="width:${(d+h*.5)/words.length*100}%"></i></div>`;}
+  function next(){
+    if(!queue.length){queue=shuffle(words.filter(w=>lv[w.en]<2));}
+    if(!queue.length){st.innerHTML=`<div class="panel done"><h3>모두 완료했어요</h3><p>${words.length}개 단어를 객관식과 쓰기로 한 번씩 통과했어요.</p><div class="row"><button class="btn" id="re">다시 학습하기</button><button class="btn ghost" id="hm">처음으로</button></div></div>`;$('#re').onclick=learn;$('#hm').onclick=()=>go(null);return;}
+    cur=queue.shift();
+    lv[cur.en]===0?mc():typed();
+  }
+  function mc(){
+    const w=cur,toKo=S.dir==='en',opts=shuffle([w,...pick(words.length>=4?words:WORDS,3,w)]);
+    st.innerHTML=bar()+`<div class="panel"><p class="prompt-label">${toKo?'알맞은 뜻을 고르세요':'알맞은 단어를 고르세요'}</p>
+    <p class="prompt ${toKo?'en':''}">${esc(toKo?w.en:w.ko)}</p>
+    <div class="choices">${opts.map((o,k)=>`<button class="choice ${toKo?'':'en'}" data-k="${k}">${esc(toKo?o.ko:o.en)}</button>`).join('')}</div><div id="fb"></div></div>`;
+    if(toKo)speak(w.en);
+    st.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
+      const o=opts[b.dataset.k],ok=o===w;
+      st.querySelectorAll('.choice').forEach(x=>{x.disabled=true;if(opts[x.dataset.k]===w)x.classList.add('right');});
+      if(!ok)b.classList.add('wrong');
+      record(w,ok);
+      if(ok){lv[w.en]=1;setTimeout(next,650);}
+      else{queue.splice(Math.min(3,queue.length),0,w);$('#fb').innerHTML=`<div class="feedback no">정답은 <span class="en">${esc(w.en)}</span> = ${esc(w.ko)}</div><div class="row" style="margin-top:12px"><button class="btn" id="cont">계속</button></div>`;$('#cont').onclick=next;$('#cont').focus();}
+    });
+  }
+  function typed(){
+    const w=cur;
+    st.innerHTML=bar()+`<div class="panel"><p class="prompt-label">뜻을 보고 영어 단어를 쓰세요</p><p class="prompt">${esc(w.ko)}</p>
+    <form class="typein" id="tf" autocomplete="off" onsubmit="return false"><input id="ti" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="영어로 입력"><button class="btn" type="submit">확인</button></form>
+    <div class="row" style="margin-top:10px"><button class="btn ghost" id="idk">모르겠어요</button></div><div id="fb"></div></div>`;
+    const ti=$('#ti');ti.focus();
+    const check=(given)=>{
+      const ok=isAns(given,w);record(w,ok);ti.disabled=true;$('#idk').disabled=true;
+      if(ok){$('#fb').innerHTML=`<div class="feedback ok">정답!</div>`;lv[w.en]=2;speak(w.en);setTimeout(next,700);}
+      else{queue.splice(Math.min(3,queue.length),0,w);
+        $('#fb').innerHTML=`<div class="feedback no">${given.trim()?`내 답: ${esc(given.trim())}<br>`:''}정답: <span class="en">${esc(w.en)}</span></div>
+        <div class="row" style="margin-top:12px"><button class="btn ghost" id="mine">오타였어요, 맞은 걸로</button><button class="btn" id="cont">계속</button></div>`;
+        speak(w.en);
+        $('#cont').onclick=next;$('#mine').onclick=()=>{S.hist[w.en]=(S.hist[w.en]||[]).slice(0,-1).concat([1]);save();lv[w.en]=2;queue=queue.filter(x=>x!==w);next();};
+      }
+    };
+    $('#tf').onsubmit=e=>{e.preventDefault();if(!ti.disabled&&ti.value.trim())check(ti.value);return false;};
+    $('#idk').onclick=()=>check('');
+  }
+  next();
+}
+
+/* ---------- 테스트 ---------- */
+function test(){
+  title('테스트');
+  const P=pool();
+  stage().innerHTML=`<div class="panel"><p class="prompt-label">문제 수</p>
+  <div class="seg" id="nSeg">${[10,20,P.length].filter((v,i,a)=>v<=P.length&&a.indexOf(v)===i).map((n,i)=>`<button data-n="${n}" aria-pressed="${i===0}">${n}문제</button>`).join('')}</div>
+  <p class="prompt-label" style="margin-top:18px">문제 유형</p>
+  <div class="chk"><label><input type="checkbox" id="tMc" checked> 객관식</label><label><input type="checkbox" id="tWr" checked> 주관식 (영어 쓰기)</label><label><input type="checkbox" id="tTf" checked> O/X</label></div>
+  <button class="btn" id="startT" style="width:100%">시험 시작</button></div>`;
+  let n=Math.min(10,P.length);
+  $('#nSeg').onclick=e=>{const b=e.target.closest('button');if(!b)return;n=+b.dataset.n;$('#nSeg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));};
+  $('#startT').onclick=()=>{
+    const types=[$('#tMc').checked&&'mc',$('#tWr').checked&&'wr',$('#tTf').checked&&'tf'].filter(Boolean);
+    if(!types.length){alert('문제 유형을 하나 이상 골라 주세요.');return;}
+    runTest(shuffle(P).slice(0,n),types);
+  };
+}
+function runTest(words,types){
+  const qs=words.map((w,i)=>{const t=types[i%types.length];
+    if(t==='mc'){const toKo=S.dir==='en';return {t,w,toKo,opts:shuffle([w,...pick(WORDS,3,w)])};}
+    if(t==='tf'){const truth=Math.random()<.5;return {t,w,shown:truth?w:pick(WORDS,1,w)[0],truth};}
+    return {t,w};});
+  const st=stage();
+  st.innerHTML=`<div class="panel"><p class="note">${qs.length}문제. 다 풀고 맨 아래 제출 버튼을 누르세요.</p>`+qs.map((q,i)=>{
+    let body='';
+    if(q.t==='mc') body=`<p class="prompt ${q.toKo?'en':''}" style="font-size:${q.toKo?'26px':'18px'}">${esc(q.toKo?q.w.en:q.w.ko)}</p><div class="choices">${q.opts.map((o,k)=>`<button class="choice ${q.toKo?'':'en'}" data-q="${i}" data-k="${k}">${esc(q.toKo?o.ko:o.en)}</button>`).join('')}</div>`;
+    if(q.t==='tf') body=`<p class="prompt"><span style="font-family:var(--en);font-size:24px">${esc(q.w.en)}</span> = ${esc(q.shown.ko)}</p><div class="tf"><button class="choice" data-q="${i}" data-k="1">O 맞아요</button><button class="choice" data-q="${i}" data-k="0">X 틀려요</button></div>`;
+    if(q.t==='wr') body=`<p class="prompt">${esc(q.w.ko)}</p><div class="typein"><input data-q="${i}" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="영어로 입력"></div>`;
+    const lab={mc:'객관식',tf:'O/X',wr:'주관식'}[q.t];
+    return `<div class="q" id="q${i}"><p class="qn">${i+1}. ${lab}</p>${body}<div class="ans hidden"></div></div>`;}).join('')+
+  `<button class="btn" id="submitT" style="width:100%;margin-top:14px">제출하고 채점하기</button></div>`;
+  const ans={};
+  st.querySelectorAll('.choice[data-q]').forEach(b=>b.onclick=()=>{const i=b.dataset.q;ans[i]=+b.dataset.k;
+    st.querySelectorAll(`.choice[data-q="${i}"]`).forEach(x=>x.classList.toggle('sel-a',x===b));
+    st.querySelectorAll(`.choice[data-q="${i}"]`).forEach(x=>x.style.outline=x===b?'3px solid var(--accent)':'');});
+  $('#submitT').onclick=()=>{
+    const blank=qs.filter((q,i)=>q.t==='wr'?!st.querySelector(`input[data-q="${i}"]`).value.trim():ans[i]===undefined).length;
+    if(blank&&!confirm(`안 푼 문제가 ${blank}개 있어요. 그래도 제출할까요?`))return;
+    let score=0;
+    qs.forEach((q,i)=>{let ok=false,el=$('#q'+i),a=el.querySelector('.ans');
+      if(q.t==='mc'){ok=q.opts[ans[i]]===q.w;el.querySelectorAll('.choice').forEach(x=>{x.disabled=true;x.style.outline='';if(q.opts[x.dataset.k]===q.w)x.classList.add('right');else if(+x.dataset.k===ans[i])x.classList.add('wrong');});}
+      if(q.t==='tf'){ok=(ans[i]===1)===q.truth&&ans[i]!==undefined;el.querySelectorAll('.choice').forEach(x=>{x.disabled=true;x.style.outline='';if((+x.dataset.k===1)===q.truth)x.classList.add('right');else if(+x.dataset.k===ans[i])x.classList.add('wrong');});
+        if(!q.truth){a.innerHTML=`<span class="en">${esc(q.w.en)}</span>의 뜻은 ${esc(q.w.ko)}`;a.classList.remove('hidden');}}
+      if(q.t==='wr'){const inp=el.querySelector('input');ok=isAns(inp.value,q.w);inp.disabled=true;if(!ok){a.innerHTML=`정답: <span class="en">${esc(q.w.en)}</span>`;a.classList.remove('hidden');}}
+      el.classList.add(ok?'correct':'incorrect');if(ok)score++;record(q.w,ok);});
+    $('#submitT').remove();
+    const wrong=qs.filter((q,i)=>$('#q'+i).classList.contains('incorrect')).map(q=>q.w);
+    const box=document.createElement('div');box.className='panel done';box.style.marginBottom='14px';
+    box.innerHTML=`<div class="score">${score} / ${qs.length}</div><p style="margin-top:8px">${Math.round(score/qs.length*100)}점</p><div class="row">${wrong.length?'<button class="btn" id="wc">틀린 단어 카드로 보기</button>':''}<button class="btn ghost" id="nt">새 시험</button></div>`;
+    st.prepend(box);window.scrollTo({top:0,behavior:'smooth'});
+    $('#wc')&&($('#wc').onclick=()=>{if(cleanup){cleanup();cleanup=null;}title('낱말카드');cards(shuffle(wrong));});
+    $('#nt').onclick=test;
+  };
+}
+
+/* ---------- 카드 맞추기 ---------- */
+function match(){
+  title('카드 맞추기');
+  const set=shuffle(pool()).slice(0,6);
+  const tiles=shuffle(set.flatMap(w=>[{w,en:true},{w,en:false}]));
+  let sel=null,left=6,t0=performance.now(),pen=0,raf;
+  const best=S.best[S.day+'match'];
+  $('#scRight').innerHTML=`<span class="timer pill" id="tm">0.0초</span>`;
+  stage().innerHTML=`<p class="note">같은 단어와 뜻을 차례로 누르세요. 틀리면 1초가 더해져요.${best?` 최고 기록 ${best.toFixed(1)}초`:''}</p>
+  <div class="mgrid">${tiles.map((t,k)=>`<button class="tile ${t.en?'en':''}" data-k="${k}">${esc(t.en?t.w.en:t.w.ko)}</button>`).join('')}</div>`;
+  const tick=()=>{$('#tm')&&($('#tm').textContent=((performance.now()-t0)/1000+pen).toFixed(1)+'초');raf=requestAnimationFrame(tick);};tick();
+  cleanup=()=>cancelAnimationFrame(raf);
+  stage().querySelectorAll('.tile').forEach(b=>b.onclick=()=>{
+    const t=tiles[b.dataset.k];
+    if(!sel){sel=b;b.classList.add('sel');return;}
+    if(sel===b){b.classList.remove('sel');sel=null;return;}
+    const s=tiles[sel.dataset.k];
+    if(s.w===t.w&&s.en!==t.en){sel.classList.add('gone');b.classList.add('gone');sel=null;left--;
+      if(!left){cancelAnimationFrame(raf);const time=(performance.now()-t0)/1000+pen;const nb=!best||time<best;if(nb){S.best[S.day+'match']=time;save();}
+        setTimeout(()=>{stage().innerHTML=`<div class="panel done"><h3>${time.toFixed(1)}초</h3><p>${nb?'새 최고 기록이에요!':`최고 기록 ${best.toFixed(1)}초`}</p><div class="row"><button class="btn" id="re">다시 하기</button><button class="btn ghost" id="hm">처음으로</button></div></div>`;$('#re').onclick=match;$('#hm').onclick=()=>go(null);},300);}
+    }else{pen+=1;const a=sel;a.classList.remove('sel');a.classList.add('wrong');b.classList.add('wrong');sel=null;setTimeout(()=>{a.classList.remove('wrong');b.classList.remove('wrong');},450);}
+  });
+}
+
+/* ---------- Blast ---------- */
+function blast(){
+  title('Blast');
+  const P=pool();let score=0,lives=3,speed=38,rocks=[],target=null,raf,last=performance.now(),over=false;
+  stage().innerHTML=`<div class="hud"><span>점수 <b id="bs">0</b></span><span class="lives" id="bl">❤️❤️❤️</span></div>
+  <div class="arena" id="ar"><div class="ground"></div></div><div class="target" id="bt"></div>
+  <p class="note" style="margin-top:8px;text-align:center">노란 칸의 뜻에 맞는 단어를 바닥에 닿기 전에 누르세요.</p>`;
+  const ar=$('#ar');
+  function wave(){
+    rocks.forEach(r=>r.el.remove());rocks=[];
+    target=P[Math.random()*P.length|0];
+    const set=shuffle([target,...pick(P.length>=4?P:WORDS,3,target)]);
+    $('#bt').textContent=target.ko;
+    const W=ar.clientWidth;
+    set.forEach((w,k)=>{const el=document.createElement('button');el.className='rock';el.textContent=w.en;ar.appendChild(el);
+      const ew=el.offsetWidth;const slot=W/4;let x=Math.max(6,Math.min(W-ew-6,slot*k+(slot-ew)/2+(Math.random()-.5)*20));
+      if(W<420)x=Math.max(6,Math.min(W-ew-6,Math.random()*(W-ew)));
+      const r={w,el,x,y:-50-Math.random()*90-(W<420?k*55:0)};rocks.push(r);
+      el.onclick=()=>hit(r);});
+  }
+  function hit(r){if(over)return;
+    if(r.w===target){score+=10;speed+=3;$('#bs').textContent=score;r.el.classList.add('hit');rocks=rocks.filter(x=>x!==r);setTimeout(()=>{wave();},250);rocks.forEach(x=>x.el.style.pointerEvents='none');}
+    else{r.el.classList.add('miss');loseLife();}}
+  function loseLife(){lives--;$('#bl').textContent='❤️'.repeat(Math.max(0,lives))+'🤍'.repeat(3-Math.max(0,lives));if(lives<=0)end();}
+  function loop(t){const dt=Math.min(.05,(t-last)/1000);last=t;const H=ar.clientHeight;
+    rocks.forEach(r=>{r.y+=speed*dt;r.el.style.transform=`translate(${r.x}px,${r.y}px)`;});
+    const tr=rocks.find(r=>r.w===target);
+    if(tr&&tr.y>H-50){loseLife();if(!over)wave();}
+    if(!over)raf=requestAnimationFrame(loop);}
+  function end(){over=true;cancelAnimationFrame(raf);const best=S.best[S.day+'blast']||0;if(score>best){S.best[S.day+'blast']=score;save();}
+    stage().innerHTML=`<div class="panel done"><h3>${score}점</h3><p>${score>best?'새 최고 점수예요!':`최고 점수 ${best}점`}</p><div class="row"><button class="btn" id="re">다시 하기</button><button class="btn ghost" id="hm">처음으로</button></div></div>`;$('#re').onclick=blast;$('#hm').onclick=()=>go(null);}
+  wave();raf=requestAnimationFrame(t=>{last=t;loop(t)});
+  cleanup=()=>{over=true;cancelAnimationFrame(raf);};
+}
+
+/* ---------- 블록 ---------- */
+function blocks(){
+  title('블록');
+  const P=pool();let score=0,stack=[],cur=null,y=0,speed=34,raf,last,over=false,busy=false;
+  const BH=40,MAXS=6;
+  stage().innerHTML=`<div class="hud"><span>점수 <b id="ks">0</b></span><span id="kh">쌓인 블록 0 / ${MAXS}</span></div>
+  <div class="well" id="wl"><div class="stack" id="stk"></div></div>
+  <div class="choices" id="kc" style="margin-top:12px"></div>
+  <p class="note" style="margin-top:8px;text-align:center">떨어지는 단어의 뜻을 고르면 블록이 깨져요. 틀리거나 바닥에 닿으면 쌓이고, ${MAXS}개가 쌓이면 끝나요.</p>`;
+  const wl=$('#wl');
+  function spawn(){
+    busy=false;cur=P[Math.random()*P.length|0];y=-BH;
+    const el=document.createElement('div');el.className='fall';el.id='fall';el.textContent=cur.en;wl.appendChild(el);
+    const opts=shuffle([cur,...pick(P.length>=4?P:WORDS,3,cur)]);
+    $('#kc').innerHTML=opts.map((o,k)=>`<button class="choice" data-k="${k}">${esc(o.ko)}</button>`).join('');
+    $('#kc').querySelectorAll('.choice').forEach(b=>b.onclick=()=>{if(busy||over)return;
+      if(opts[b.dataset.k]===cur){busy=true;b.classList.add('right');score+=10+Math.round((wl.clientHeight-y)/20);speed+=2.5;$('#ks').textContent=score;const f=$('#fall');f.classList.add('boom');setTimeout(()=>{f.remove();spawn();},260);}
+      else{b.classList.add('wrong');land();}});
+  }
+  function land(){if(busy)return;busy=true;const f=$('#fall');f&&f.remove();stack.push(cur);
+    $('#stk').innerHTML=stack.map(w=>`<div class="sblock">${esc(w.en)}</div>`).join('');
+    $('#kh').textContent=`쌓인 블록 ${stack.length} / ${MAXS}`;
+    if(stack.length>=MAXS)end();else setTimeout(spawn,350);}
+  function loop(t){if(over)return;const dt=Math.min(.05,(t-last)/1000);last=t;
+    if(!busy&&$('#fall')){y+=speed*dt;$('#fall').style.top=y+'px';const floor=wl.clientHeight-stack.length*BH-BH-6;if(y>=floor)land();}
+    raf=requestAnimationFrame(loop);}
+  function end(){over=true;cancelAnimationFrame(raf);const best=S.best[S.day+'blocks']||0;if(score>best){S.best[S.day+'blocks']=score;save();}
+    const missed=[...new Set(stack)];
+    stage().innerHTML=`<div class="panel done"><h3>${score}점</h3><p>${score>best?'새 최고 점수예요!':`최고 점수 ${best}점`}</p>
+    <p style="font-size:14px">쌓인 단어: ${missed.map(w=>`<b style="font-family:var(--en)">${esc(w.en)}</b> ${esc(w.ko)}`).join('<br>')}</p>
+    <div class="row"><button class="btn" id="re">다시 하기</button><button class="btn ghost" id="hm">처음으로</button></div></div>`;$('#re').onclick=blocks;$('#hm').onclick=()=>go(null);}
+  spawn();raf=requestAnimationFrame(t=>{last=t;loop(t)});
+  cleanup=()=>{over=true;cancelAnimationFrame(raf);};
+}
+
+/* ---------- 보석 ---------- */
+function gems(){
+  title('보석');
+  const P=pool(),COLORS=['#4C8DF6','#E2557A','#2EB67D','#F2B53B','#9B6BF2','#29B8C9'];
+  let score=0,combo=0,collected=[],T=60,t0=performance.now(),raf,over=false,wrongs=[];
+  stage().innerHTML=`<div class="hud"><span>보석 <b id="gs">0</b></span><span class="combo" id="gc"></span></div>
+  <div class="tbar"><i id="gt"></i></div><div class="gembar" id="gb"></div>
+  <div class="panel" id="gq"></div>
+  <p class="note" style="margin-top:8px;text-align:center">연속으로 맞힐수록 한 번에 받는 보석이 늘어나요. 틀리면 연속 기록이 끊겨요.</p>`;
+  function q(){
+    const w=P[Math.random()*P.length|0],toKo=S.dir==='en',opts=shuffle([w,...pick(P.length>=4?P:WORDS,3,w)]);
+    $('#gq').innerHTML=`<p class="prompt ${toKo?'en':''}">${esc(toKo?w.en:w.ko)}</p><div class="choices">${opts.map((o,k)=>`<button class="choice ${toKo?'':'en'}" data-k="${k}">${esc(toKo?o.ko:o.en)}</button>`).join('')}</div>`;
+    $('#gq').querySelectorAll('.choice').forEach(b=>b.onclick=()=>{if(over)return;
+      const ok=opts[b.dataset.k]===w;$('#gq').querySelectorAll('.choice').forEach(x=>x.disabled=true);
+      if(ok){combo++;const gain=Math.min(5,1+Math.floor(combo/3));score+=gain;for(let k=0;k<gain;k++)collected.push(COLORS[Math.random()*COLORS.length|0]);b.classList.add('right');}
+      else{combo=0;wrongs.push(w);b.classList.add('wrong');$('#gq').querySelectorAll('.choice').forEach(x=>{if(opts[x.dataset.k]===w)x.classList.add('right')});}
+      $('#gs').textContent=score;$('#gc').textContent=combo>=3?`${combo}연속 ×${Math.min(5,1+Math.floor(combo/3))}`:'';
+      $('#gb').innerHTML=collected.slice(-80).map(c=>`<span class="gem" style="background:${c}"></span>`).join('');
+      setTimeout(q,ok?300:900);});
+  }
+  function tick(){const left=T-(performance.now()-t0)/1000;$('#gt').style.width=Math.max(0,left/T*100)+'%';if(left<=0)return end();raf=requestAnimationFrame(tick);}
+  function end(){over=true;cancelAnimationFrame(raf);const best=S.best[S.day+'gems']||0;if(score>best){S.best[S.day+'gems']=score;save();}
+    const ws=[...new Set(wrongs)];
+    stage().innerHTML=`<div class="panel done"><h3>보석 ${score}개</h3><p>${score>best?'새 최고 기록이에요!':`최고 기록 ${best}개`}</p>
+    ${ws.length?`<p style="font-size:14px">틀린 단어: ${ws.map(w=>`<b style="font-family:var(--en)">${esc(w.en)}</b> ${esc(w.ko)}`).join('<br>')}</p>`:''}
+    <div class="row"><button class="btn" id="re">다시 하기</button><button class="btn ghost" id="hm">처음으로</button></div></div>`;$('#re').onclick=gems;$('#hm').onclick=()=>go(null);}
+  q();tick();cleanup=()=>{over=true;cancelAnimationFrame(raf);};
+}
+
+$('#dayGrid').addEventListener('click',e=>{const b=e.target.closest('[data-day]');if(!b)return;setDay(+b.dataset.day,true);document.querySelector('.hero').scrollIntoView({behavior:'smooth'});});
+$('#prevDay').onclick=()=>setDay(S.day-1,true);$('#nextDay').onclick=()=>setDay(S.day+1,true);
+function fromHash(){const m=/^#day-(\d+)$/.exec(location.hash);if(m){if(cleanup){cleanup();cleanup=null;}$('#screen').classList.add('hidden');$('#home').classList.remove('hidden');setDay(+m[1],false);return true;}return false;}
+window.addEventListener('hashchange',fromHash);
+if(!fromHash()){loadDay(S.day||1);renderHome();}
+
+/* ---------- 폰·패드 동기화 ---------- */
+let uref=null,pushTimer=null,writing=Promise.resolve();
+const SYNC_TXT={ok:'폰·패드 동기화 켜짐',loading:'동기화 연결 중',local:'이 기기에만 저장돼요',err:'동기화 끊김, 이 기기엔 저장됨'};
+function setSync(k){const el=$('#syncPill');if(!el)return;el.dataset.s=k;el.textContent=SYNC_TXT[k];}
+function snapshotState(){return JSON.parse(JSON.stringify({hist:S.hist,star:S.star,best:S.best,dir:S.dir,set:S.set,day:S.day,updated:S.updated||Date.now()}));}
+function cloudPush(){if(!uref)return;clearTimeout(pushTimer);pushTimer=setTimeout(()=>{const data=snapshotState();
+  writing=writing.then(()=>uref.set(data)).then(()=>setSync('ok')).catch(()=>setSync('err'));},1000);}
+function onHome(){return !$('#home').classList.contains('hidden');}
+function applyRemote(d){
+  S.hist=d.hist||{};S.star=d.star||[];S.best=d.best||{};S.dir=d.dir||S.dir;S.set=d.set||S.set;S.updated=d.updated||0;
+  if(onHome()&&d.day){S.day=d.day;}
+  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  if(onHome()){loadDay(S.day);renderHome();}
+}
+function mergeInto(base,extra){ // extra를 base에 합치기: 기록은 base 우선, 별표는 합치고, 최고 기록은 더 좋은 쪽
+  const out={...base,hist:{...(extra.hist||{}),...(base.hist||{})},star:[...new Set([...(base.star||[]),...(extra.star||[])])],best:{...(extra.best||{})}};
+  for(const [k,v] of Object.entries(base.best||{})){const o=out.best[k];out.best[k]=o==null?v:(k.endsWith('match')?Math.min(o,v):Math.max(o,v));}
+  return out;
+}
+(async()=>{
+  if(!window.claude||typeof window.claude.use!=='function'){setSync('local');return;}
+  setSync('loading');
+  try{
+    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
+    if(!db||!user){setSync('local');return;}
+    const id=await user.id();if(!id){setSync('local');return;}
+    uref=db.doc('data/users/'+id+'/state');
+    const snap=await uref.get();
+    const hasLocal=Object.keys(S.hist).length||S.star.length;
+    if(snap.exists){
+      const d=snap.data();
+      const merged=(d.updated||0)>=(S.updated||0)?mergeInto(d,S):mergeInto(snapshotState(),d);
+      merged.updated=Date.now();applyRemote(merged);cloudPush();
+    }else if(hasLocal){cloudPush();}
+    setSync('ok');
+    uref.onSnapshot(sn=>{if(!sn.exists)return;const d=sn.data();if((d.updated||0)>(S.updated||0))applyRemote(d);setSync('ok');},()=>setSync('err'));
+  }catch(e){setSync('err');}
+})();
+
+
+
+</script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
+</script>
+</body>
+</html>
