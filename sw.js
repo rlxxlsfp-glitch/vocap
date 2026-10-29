@@ -1,6 +1,6 @@
 // 오프라인에서도 열리게 해 주는 서비스 워커
 // 앱 내용을 고친 뒤에는 VERSION 숫자를 하나 올려 주세요.
-const VERSION = 'vocap-v4';
+const VERSION = 'vocap-v5';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon.png'];
 
 self.addEventListener('install', e => {
@@ -22,7 +22,7 @@ self.addEventListener('fetch', e => {
     return;
   }
   // 글꼴·아이콘: 저장본 먼저
-  if (url.origin === location.origin || url.hostname.endsWith('fonts.googleapis.com') || url.hostname.endsWith('fonts.gstatic.com')) {
+  if (url.origin === location.origin || url.hostname.endsWith('fonts.googleapis.com') || url.hostname.endsWith('fonts.gstatic.com') || url.pathname.startsWith('/firebasejs/')) {
     e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {
       if (r.ok || r.type === 'opaque') { const copy = r.clone(); caches.open(VERSION).then(c => c.put(req, copy)); }
       return r;

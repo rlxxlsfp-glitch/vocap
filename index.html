@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>VOCAP</title>
+<script>window.VOCAP_FB=true;</script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#17113A">
 <meta name="mobile-web-app-capable" content="yes">
@@ -237,6 +238,12 @@ button{cursor:pointer}
 .hero .sync[data-s="ok"]::before{background:#4CC38A;box-shadow:0 0 8px #4CC38A}
 .hero .sync[data-s="loading"]::before{background:#F0B44C}
 .hero .sync[data-s="err"]::before{background:#FF7A8A}
+
+.authbox{position:relative;margin-top:14px;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;min-height:44px}
+.gbtn{display:inline-flex;align-items:center;gap:10px;border:0;background:#fff;color:#1F1F1F;border-radius:999px;padding:11px 20px;font-weight:700;font-size:15px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.gbtn svg{width:18px;height:18px}
+.who{font-size:14px;color:rgba(255,255,255,.85);font-weight:600}
+.outbtn{border:1px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.8);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
 </style>
 </head>
 <body>
@@ -247,7 +254,8 @@ button{cursor:pointer}
     <h1>VOCAP</h1>
     <p class="dayname" id="dayTitle">Day 1</p>
     <p>워드마스터 하이퍼 2000 · 40단어</p>
-    <p class="sync" id="syncPill" data-s="local">이 기기에만 저장돼요</p>
+    <p class="sync" id="syncPill" data-s="local">로그인하면 폰·패드 동기화돼요</p>
+    <div class="authbox" id="authBox"></div>
     <div class="daynav"><button id="prevDay" aria-label="이전 Day">← 이전</button><button id="nextDay" aria-label="다음 Day">다음 →</button></div>
   </header>
 
@@ -659,7 +667,7 @@ if(!fromHash()){loadDay(S.day||1);renderHome();}
 
 /* ---------- 폰·패드 동기화 ---------- */
 let uref=null,pushTimer=null,writing=Promise.resolve();
-const SYNC_TXT={ok:'폰·패드 동기화 켜짐',loading:'동기화 연결 중',local:'이 기기에만 저장돼요',err:'동기화 끊김, 이 기기엔 저장됨'};
+const SYNC_TXT={ok:'폰·패드 동기화 켜짐',loading:'동기화 연결 중',local:window.VOCAP_FB?'로그인하면 폰·패드 동기화돼요':'이 기기에만 저장돼요',err:'동기화 끊김, 이 기기엔 저장됨'};
 function setSync(k){const el=$('#syncPill');if(!el)return;el.dataset.s=k;el.textContent=SYNC_TXT[k];}
 function snapshotState(){return JSON.parse(JSON.stringify({hist:S.hist,star:S.star,best:S.best,dir:S.dir,set:S.set,day:S.day,updated:S.updated||Date.now()}));}
 function cloudPush(){if(!uref)return;clearTimeout(pushTimer);pushTimer=setTimeout(()=>{const data=snapshotState();
@@ -676,14 +684,11 @@ function mergeInto(base,extra){ // extra를 base에 합치기: 기록은 base �
   for(const [k,v] of Object.entries(base.best||{})){const o=out.best[k];out.best[k]=o==null?v:(k.endsWith('match')?Math.min(o,v):Math.max(o,v));}
   return out;
 }
-(async()=>{
-  if(!window.claude||typeof window.claude.use!=='function'){setSync('local');return;}
-  setSync('loading');
+let unsub=null;
+async function connectCloud(ref){
+  if(unsub){unsub();unsub=null;}
+  uref=ref;setSync('loading');
   try{
-    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
-    if(!db||!user){setSync('local');return;}
-    const id=await user.id();if(!id){setSync('local');return;}
-    uref=db.doc('data/users/'+id+'/state');
     const snap=await uref.get();
     const hasLocal=Object.keys(S.hist).length||S.star.length;
     if(snap.exists){
@@ -692,12 +697,88 @@ function mergeInto(base,extra){ // extra를 base에 합치기: 기록은 base �
       merged.updated=Date.now();applyRemote(merged);cloudPush();
     }else if(hasLocal){cloudPush();}
     setSync('ok');
-    uref.onSnapshot(sn=>{if(!sn.exists)return;const d=sn.data();if((d.updated||0)>(S.updated||0))applyRemote(d);setSync('ok');},()=>setSync('err'));
+    unsub=uref.onSnapshot(sn=>{if(!sn.exists)return;const d=sn.data();if((d.updated||0)>(S.updated||0))applyRemote(d);setSync('ok');},()=>setSync('err'));
+  }catch(e){console.error(e);setSync('err');}
+}
+function disconnectCloud(){if(unsub){unsub();unsub=null;}uref=null;setSync('local');}
+window.vocapCloud={connect:connectCloud,disconnect:disconnectCloud};
+(async()=>{
+  if(!window.claude||typeof window.claude.use!=='function'){setSync('local');return;}
+  setSync('loading');
+  try{
+    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
+    if(!db||!user){setSync('local');return;}
+    const id=await user.id();if(!id){setSync('local');return;}
+    connectCloud(db.doc('data/users/'+id+'/state'));
   }catch(e){setSync('err');}
 })();
 
 
 
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBX63hV8FnrkrtAuh9644yw4BSV2GTUPv4",
+  authDomain: "vocap-e3e9e.firebaseapp.com",
+  projectId: "vocap-e3e9e",
+  storageBucket: "vocap-e3e9e.firebasestorage.app",
+  messagingSenderId: "322645613396",
+  appId: "1:322645613396:web:9b73e58558018c972fc6c1"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+auth.languageCode = "ko";
+const db = getFirestore(app);
+const box = document.getElementById("authBox");
+const G = '<svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.6 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.2C1 16.6 0 20.2 0 24s1 7.4 2.7 10.9l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.8-5.8l-7.4-5.7c-2.1 1.4-4.8 2.2-8.4 2.2-6.2 0-11.5-4.1-13.4-9.8l-7.9 6.2C6.6 42.6 14.6 48 24 48z"/></svg>';
+
+function wrap(ref){
+  return {
+    get: async () => { const s = await getDoc(ref); return { exists: s.exists(), data: () => s.data() }; },
+    set: (d) => setDoc(ref, d),
+    onSnapshot: (cb, err) => onSnapshot(ref, s => cb({ exists: s.exists(), data: () => s.data() }), err)
+  };
+}
+
+async function login(){
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  try { await signInWithPopup(auth, provider); }
+  catch (e) {
+    if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") {
+      await signInWithRedirect(auth, provider);
+    } else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") {
+      alert("로그인이 안 됐어요. 이 문구를 캡처해 주세요.\n" + e.code);
+    }
+  }
+}
+
+function render(user){
+  if (!box) return;
+  if (user) {
+    const name = (user.displayName || "").split(" ")[0] || "내 계정";
+    box.innerHTML = '<span class="who"></span><button class="outbtn" id="outBtn">로그아웃</button>';
+    box.querySelector(".who").textContent = name + " 로그인됨";
+    document.getElementById("outBtn").onclick = () => { if (confirm("로그아웃할까요? 이 기기의 기록은 그대로 남아요.")) signOut(auth); };
+  } else {
+    box.innerHTML = '<button class="gbtn" id="inBtn">' + G + '구글로 로그인</button>';
+    document.getElementById("inBtn").onclick = login;
+  }
+}
+
+render(null);
+getRedirectResult(auth).catch(e => { if (e && e.code) alert("로그인이 안 됐어요. 이 문구를 캡처해 주세요.\n" + e.code); });
+onAuthStateChanged(auth, user => {
+  render(user);
+  if (!window.vocapCloud) return;
+  if (user) window.vocapCloud.connect(wrap(doc(db, "users", user.uid)));
+  else window.vocapCloud.disconnect();
+});
 </script>
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
