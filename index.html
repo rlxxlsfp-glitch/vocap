@@ -351,6 +351,11 @@ body{background:radial-gradient(1100px 650px at 50% -5%,#241B52 0%,rgba(13,10,30
 #bookSeg{display:grid;grid-template-columns:repeat(4,1fr);border-radius:20px;width:100%}
 #bookSeg button{border-radius:14px;padding:10px 6px;white-space:nowrap}
 @media (max-width:520px){#bookSeg{grid-template-columns:repeat(2,1fr)}}
+.lmodes{display:grid;gap:12px;margin-top:8px}
+.lmode{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;border:1.5px solid var(--line);background:#1B1736;border-radius:18px;padding:18px 20px}
+.lmode b{font-size:17px;color:#fff}.lmode span{font-size:14px;color:var(--muted)}
+.lmode:hover{border-color:#5A4BB0;background:#221D45}
+.lmode.on{border-color:#B49CFF;background:#2A2160}
 </style>
 
 </head>
@@ -394,7 +399,7 @@ body{background:radial-gradient(1100px 650px at 50% -5%,#241B52 0%,rgba(13,10,30
       <p class="desc">카드로 훑고, 학습하기로 다지고, 테스트로 확인해요. 지칠 땐 게임으로.</p>
       <div class="modes">
         <button class="mode" data-go="cards"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="14" rx="3"/><path d="M7 3h11a3 3 0 0 1 3 3v11"/></svg></span><span><b>낱말카드</b><small>뒤집어 보면서 외우기</small></span></button>
-        <button class="mode" data-go="learn"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg></span><span><b>학습하기</b><small>객관식 다음 직접 쓰기, 틀린 건 다시</small></span></button>
+        <button class="mode" data-go="learn"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg></span><span><b>학습하기</b><small>객관식, 주관식 골라서 익히기</small></span></button>
         <button class="mode" data-go="test"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2h6v4H9z"/><path d="M9 13l2 2 4-4"/></svg></span><span><b>테스트</b><small>객관식, 주관식, O/X로 실전처럼</small></span></button>
         <button class="mode" data-go="match"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><path d="M14 17.5h7M17.5 14v7"/></svg></span><span><b>카드 맞추기</b><small>단어와 뜻 짝 맞추기, 기록 재기</small></span></button>
         <button class="mode" data-go="blast"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a22 22 0 0 1 2-4A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2z"/><path d="M9 12H4s.6-3 2-4c1.6-1.1 5 0 5 0M12 15v5s3-.6 4-2c1.1-1.6 0-5 0-5"/></svg></span><span><b>Blast</b><small>떨어지는 단어 중 맞는 걸 터뜨리기</small></span></button>
@@ -651,15 +656,25 @@ function cards(list){
 /* ---------- 학습하기 ---------- */
 function learn(){
   title('학습하기');
+  const cur=S.learnMode||'both';
+  const opts=[['both','객관식 + 주관식','객관식으로 익히고, 직접 써 보기까지'],['mc','객관식만','보기 4개 중에 고르기'],['typed','주관식만','뜻을 보고 영어로 직접 쓰기']];
+  stage().innerHTML=`<div class="panel"><p class="prompt-label">문제 방식을 고르세요</p>
+    <div class="lmodes">${opts.map(([k,t,d])=>`<button class="lmode${k===cur?' on':''}" data-m="${k}"><b>${t}</b><span>${d}</span></button>`).join('')}</div></div>`;
+  stage().querySelectorAll('.lmode').forEach(b=>b.onclick=()=>{S.learnMode=b.dataset.m;save();runLearn(b.dataset.m);});
+}
+function runLearn(mode){
+  title('학습하기');
   const words=shuffle(pool());
-  const lv={};words.forEach(w=>lv[w.en]=0); // 0 객관식, 1 쓰기, 2 완료
+  const lv={};words.forEach(w=>lv[w.en]=mode==='typed'?1:0); // 0 객관식, 1 쓰기, 2 완료
   let queue=words.slice(),cur=null;
   const st=stage();
   function bar(){const d=words.filter(w=>lv[w.en]===2).length,h=words.filter(w=>lv[w.en]===1).length;
+    if(mode!=='both')return `<div class="tally"><span>${mode==='mc'?'객관식':'주관식'}</span><span>완료 ${d} / ${words.length}</span></div><div class="bar"><i style="width:${d/words.length*100}%"></i></div>`;
     return `<div class="tally"><span>익숙해짐 ${h}</span><span>완료 ${d} / ${words.length}</span></div><div class="bar"><i style="width:${(d+h*.5)/words.length*100}%"></i></div>`;}
   function next(){
     if(!queue.length){queue=shuffle(words.filter(w=>lv[w.en]<2));}
-    if(!queue.length){st.innerHTML=`<div class="panel done"><h3>모두 완료했어요</h3><p>${words.length}개 단어를 객관식과 쓰기로 한 번씩 통과했어요.</p><div class="row"><button class="btn" id="re">다시 학습하기</button><button class="btn ghost" id="hm">처음으로</button></div></div>`;$('#re').onclick=learn;$('#hm').onclick=()=>go(null);return;}
+    if(!queue.length){const how={both:'객관식과 주관식으로',mc:'객관식으로',typed:'주관식으로'}[mode];
+      st.innerHTML=`<div class="panel done"><h3>모두 완료했어요</h3><p>${words.length}개 단어를 ${how} 모두 통과했어요.</p><div class="row"><button class="btn" id="re">다시 학습하기</button><button class="btn ghost" id="hm">처음으로</button></div></div>`;$('#re').onclick=()=>runLearn(mode);$('#hm').onclick=()=>go(null);return;}
     cur=queue.shift();
     lv[cur.en]===0?mc():typed();
   }
@@ -674,7 +689,7 @@ function learn(){
       st.querySelectorAll('.choice').forEach(x=>{x.disabled=true;if(opts[x.dataset.k]===w)x.classList.add('right');});
       if(!ok)b.classList.add('wrong');
       record(w,ok);
-      if(ok){lv[w.en]=1;setTimeout(next,650);}
+      if(ok){lv[w.en]=mode==='mc'?2:1;setTimeout(next,650);}
       else{queue.splice(Math.min(3,queue.length),0,w);$('#fb').innerHTML=`<div class="feedback no">정답은 <span class="en">${esc(w.en)}</span> = ${esc(w.ko)}</div><div class="row" style="margin-top:12px"><button class="btn" id="cont">계속</button></div>`;$('#cont').onclick=next;$('#cont').focus();}
     });
   }
@@ -689,9 +704,9 @@ function learn(){
       if(ok){$('#fb').innerHTML=`<div class="feedback ok">정답! +10 XP</div>`;lv[w.en]=2;speak(w.en);setTimeout(next,700);}
       else{queue.splice(Math.min(3,queue.length),0,w);
         $('#fb').innerHTML=`<div class="feedback no">${given.trim()?`내 답: ${esc(given.trim())}<br>`:''}정답: <span class="en">${esc(w.en)}</span></div>
-        <div class="row" style="margin-top:12px"><button class="btn ghost" id="mine">오타였어요, 맞은 걸로</button><button class="btn" id="cont">계속</button></div>`;
+        <div class="row" style="margin-top:12px">${given.trim()?'<button class="btn ghost" id="mine">정답 처리</button>':''}<button class="btn" id="cont">계속</button></div>`;
         speak(w.en);
-        $('#cont').onclick=next;$('#mine').onclick=()=>{undoWrong(w);lv[w.en]=2;queue=queue.filter(x=>x!==w);next();};
+        $('#cont').onclick=next;const m=$('#mine');if(m)m.onclick=()=>{undoWrong(w);lv[w.en]=2;queue=queue.filter(x=>x!==w);next();};
       }
     };
     $('#tf').onsubmit=e=>{e.preventDefault();if(!ti.disabled&&ti.value.trim())check(ti.value);return false;};
@@ -699,6 +714,7 @@ function learn(){
   }
   next();
 }
+
 
 /* ---------- 테스트 ---------- */
 function test(){
