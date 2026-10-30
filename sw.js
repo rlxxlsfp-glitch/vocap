@@ -1,6 +1,6 @@
 // 오프라인에서도 열리게 해 주는 서비스 워커
 // 앱 내용을 고친 뒤에는 VERSION 숫자를 하나 올려 주세요.
-const VERSION = 'vocap-v8';
+const VERSION = 'vocap-v9';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon.png'];
 
 self.addEventListener('install', e => {
@@ -36,7 +36,7 @@ self.addEventListener('push', e => {
   try { p = e.data ? e.data.json() : {}; } catch (_) {}
   const d = p.data || {}, n = p.notification || {};
   const title = d.title || n.title || 'VOCAP';
-  const body = d.body || n.body || '오늘도 단어 외우자! 📚';
+  const body = d.body || n.body || '오늘 단어, 아직 안 외웠어요.';
   e.waitUntil(self.registration.showNotification(title, { body, icon: 'icon-192.png', tag: 'vocap-daily', data: { url: d.url || './' } }));
 });
 self.addEventListener('notificationclick', e => {

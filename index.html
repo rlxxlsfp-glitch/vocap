@@ -377,7 +377,7 @@ body{background:radial-gradient(1100px 650px at 50% -5%,#241B52 0%,rgba(13,10,30
     </div>
     <div class="sec">
       <h3>알림</h3>
-      <p class="desc">정한 시간에 “오늘도 단어 외우자!” 알림을 보내 줘요. 복습할 오답이 있으면 그것도 알려 줘요.</p>
+      <p class="desc">정한 시간에 알림을 보내 줘요. 복습할 단어가 있으면 그것도 알려 줘요.</p>
       <div class="card" id="notiBox"></div>
     </div>
     <div class="sec">
@@ -1028,7 +1028,7 @@ async function renderNoti(){
   document.getElementById("nTest").onclick = async () => {
     if (Notification.permission !== "granted") { const p = await Notification.requestPermission(); if (p !== "granted") return; }
     const reg = await navigator.serviceWorker.ready;
-    reg.showNotification("VOCAP", { body: "오늘도 단어 외우자! 📚 (미리보기)", icon: "icon-192.png", tag: "vocap-preview" });
+    reg.showNotification("VOCAP", { body: "오늘 단어, 아직 안 외웠어요. (미리보기)", icon: "icon-192.png", tag: "vocap-preview" });
   };
 }
 async function onNotiUser(user){
