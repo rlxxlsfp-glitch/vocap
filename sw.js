@@ -1,6 +1,6 @@
 // 오프라인에서도 열리게 해 주는 서비스 워커
 // 앱 내용을 고친 뒤에는 VERSION 숫자를 하나 올려 주세요.
-const VERSION = 'vocap-v14';
+const VERSION = 'vocap-v15';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon.png'];
 
 self.addEventListener('install', e => {
