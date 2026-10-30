@@ -1,6 +1,6 @@
 // 오프라인에서도 열리게 해 주는 서비스 워커
 // 앱 내용을 고친 뒤에는 VERSION 숫자를 하나 올려 주세요.
-const VERSION = 'vocap-v7';
+const VERSION = 'vocap-v8';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon.png'];
 
 self.addEventListener('install', e => {
@@ -28,4 +28,22 @@ self.addEventListener('fetch', e => {
       return r;
     })));
   }
+});
+
+// 매일 알림 받기
+self.addEventListener('push', e => {
+  let p = {};
+  try { p = e.data ? e.data.json() : {}; } catch (_) {}
+  const d = p.data || {}, n = p.notification || {};
+  const title = d.title || n.title || 'VOCAP';
+  const body = d.body || n.body || '오늘도 단어 외우자! 📚';
+  e.waitUntil(self.registration.showNotification(title, { body, icon: 'icon-192.png', tag: 'vocap-daily', data: { url: d.url || './' } }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || './';
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(ws => {
+    for (const w of ws) { if ('focus' in w) return w.focus(); }
+    return clients.openWindow(url);
+  }));
 });

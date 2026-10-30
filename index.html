@@ -340,6 +340,14 @@ body{background:radial-gradient(1100px 650px at 50% -5%,#241B52 0%,rgba(13,10,30
 .toast.xp{background:#11302A;color:#5EE0A0;border-color:#1F5A47;font-family:var(--en)}
 .toast.lv{background:linear-gradient(90deg,#6E4BFF,#B07CFF);color:#fff;border:0}
 @media (max-width:600px){.lvcard{grid-template-columns:1fr;justify-items:center}.lvstats{width:100%}.badges{grid-template-columns:repeat(4,1fr)}}
+.notirow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #262049}
+.notirow b{display:block;font-size:16px}.notirow span{font-size:14px;color:var(--muted)}
+.sw{position:relative;width:56px;height:32px;border-radius:999px;border:0;background:#2E2858;flex:none;transition:background .2s}
+.sw i{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#9C95C4;transition:all .2s}
+.sw.on{background:linear-gradient(90deg,#6E4BFF,#B07CFF)}.sw.on i{left:28px;background:#fff}
+#nHour{background:#231E44;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:15px}
+.notichk{display:flex;gap:10px;align-items:center;padding:14px 0 0;font-size:14px;color:#C9B8FF}
+.notichk input{accent-color:#8B6CFF;width:18px;height:18px}
 </style>
 
 </head>
@@ -366,6 +374,11 @@ body{background:radial-gradient(1100px 650px at 50% -5%,#241B52 0%,rgba(13,10,30
       <h3>오답 복습</h3>
       <p class="desc">틀린 단어는 자동으로 모였다가, 잊을 때쯤인 1일, 3일, 7일 뒤에 다시 나와요.</p>
       <div class="card" id="revBox"></div>
+    </div>
+    <div class="sec">
+      <h3>알림</h3>
+      <p class="desc">정한 시간에 “오늘도 단어 외우자!” 알림을 보내 줘요. 복습할 오답이 있으면 그것도 알려 줘요.</p>
+      <div class="card" id="notiBox"></div>
     </div>
     <div class="sec">
       <h3>Day 고르기</h3>
@@ -917,7 +930,8 @@ window.vocapCloud={connect:connectCloud,disconnect:disconnectCloud};
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getMessaging, getToken, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBX63hV8FnrkrtAuh9644yw4BSV2GTUPv4",
@@ -971,8 +985,69 @@ function render(user){
 
 render(null);
 getRedirectResult(auth).catch(e => { if (e && e.code) alert("로그인이 안 됐어요. 이 문구를 캡처해 주세요.\n" + e.code); });
+
+/* ---------- 매일 알림 ---------- */
+const VAPID = "BLWLM8s8cvzjniwEEtiOt7JsiFCiOSwatY7_Kv-hngJeAvrOMLLX4OvdssETzjqJSj4Q01xNXHPo1jy8yQOx3Fo";
+let notiUser = null, prefRef = null, prefUnsub = null, pref = {}, messaging = null;
+const fmtHour = h => h === 0 ? "밤 12시" : h === 12 ? "낮 12시" : h < 12 ? `오전 ${h}시` : `오후 ${h - 12}시`;
+async function notiSupported(){ try { return ("Notification" in window) && ("serviceWorker" in navigator) && await isSupported(); } catch (e) { return false; } }
+async function getMyToken(){
+  if (!messaging) messaging = getMessaging(app);
+  const reg = await navigator.serviceWorker.ready;
+  return await getToken(messaging, { vapidKey: VAPID, serviceWorkerRegistration: reg });
+}
+async function renderNoti(){
+  const box = document.getElementById("notiBox"); if (!box) return;
+  if (!notiUser) { box.innerHTML = '<p class="note" style="margin:0;text-align:center">위에서 구글로 로그인하면 알림을 켤 수 있어요.</p>'; return; }
+  if (!(await notiSupported())) { box.innerHTML = '<p class="note" style="margin:0;text-align:center">이 브라우저는 알림을 못 받아요. 크롬에서 열거나 앱으로 설치해 주세요.</p>'; return; }
+  const perm = Notification.permission, on = !!pref.enabled && perm === "granted";
+  const hour = pref.hour ?? 12, skip = pref.skipIfStudied !== false;
+  const hours = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,0];
+  box.innerHTML = `
+    <div class="notirow"><div><b>매일 알림</b><span>${on ? `매일 ${fmtHour(hour)}에 알려 줄게요` : "꺼져 있어요"}</span></div>
+      <button class="sw${on ? " on" : ""}" id="nToggle" aria-pressed="${on}" aria-label="매일 알림"><i></i></button></div>
+    <div class="notirow"><div><b>알림 시간</b></div><select id="nHour">${hours.map(h => `<option value="${h}"${h === hour ? " selected" : ""}>${fmtHour(h)}</option>`).join("")}</select></div>
+    <label class="notichk"><input type="checkbox" id="nSkip"${skip ? " checked" : ""}> 그날 이미 공부했으면 알림 안 받기</label>
+    ${perm === "denied" ? '<div class="fbar" style="margin-top:12px">알림이 차단돼 있어요. 크롬 주소창 왼쪽 아이콘 → 권한 → 알림을 허용으로 바꿔 주세요.</div>' : ""}
+    <button class="btn ghost" id="nTest" style="width:100%;margin-top:14px">알림 미리보기</button>`;
+  document.getElementById("nToggle").onclick = async () => {
+    const btn = document.getElementById("nToggle"); btn.disabled = true;
+    try {
+      if (on) { await setDoc(prefRef, { enabled: false }, { merge: true }); }
+      else {
+        const p = await Notification.requestPermission();
+        if (p !== "granted") { alert("알림 권한을 허용해야 알림을 받을 수 있어요."); renderNoti(); return; }
+        const token = await getMyToken();
+        await setDoc(prefRef, { enabled: true, hour, skipIfStudied: skip, tz: "Asia/Seoul", tokens: arrayUnion(token) }, { merge: true });
+      }
+    } catch (e) { console.error(e); alert("알림 설정이 안 됐어요. 이 문구를 캡처해 주세요.\n" + (e.code || e.message)); }
+    btn.disabled = false;
+  };
+  document.getElementById("nHour").onchange = e => setDoc(prefRef, { hour: +e.target.value }, { merge: true });
+  document.getElementById("nSkip").onchange = e => setDoc(prefRef, { skipIfStudied: e.target.checked }, { merge: true });
+  document.getElementById("nTest").onclick = async () => {
+    if (Notification.permission !== "granted") { const p = await Notification.requestPermission(); if (p !== "granted") return; }
+    const reg = await navigator.serviceWorker.ready;
+    reg.showNotification("VOCAP", { body: "오늘도 단어 외우자! 📚 (미리보기)", icon: "icon-192.png", tag: "vocap-preview" });
+  };
+}
+async function onNotiUser(user){
+  notiUser = user; if (prefUnsub) { prefUnsub(); prefUnsub = null; } pref = {};
+  if (!user) { prefRef = null; renderNoti(); return; }
+  prefRef = doc(db, "users", user.uid, "push", "main");
+  prefUnsub = onSnapshot(prefRef, s => { pref = s.exists() ? s.data() : {}; renderNoti(); }, () => renderNoti());
+  try { // 켜져 있으면 이 기기 토큰을 최신으로 유지
+    const s = await getDoc(prefRef);
+    if (s.exists() && s.data().enabled && (await notiSupported()) && Notification.permission === "granted") {
+      const token = await getMyToken(); await setDoc(prefRef, { tokens: arrayUnion(token) }, { merge: true });
+    }
+  } catch (e) { console.warn(e); }
+}
+
+renderNoti();
 onAuthStateChanged(auth, user => {
   render(user);
+  onNotiUser(user);
   if (!window.vocapCloud) return;
   if (user) window.vocapCloud.connect(wrap(doc(db, "users", user.uid)));
   else window.vocapCloud.disconnect();
