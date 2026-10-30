@@ -1,0 +1,73 @@
+name: VOCAP 알림
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # 매시 정각에 확인 (정한 시간에만 보냄)
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '시간 상관없이 지금 바로 보내기 (테스트용)'
+        type: boolean
+        default: true
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install firebase-admin@12 --no-save --silent
+      - name: 알림 보내기
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
+          FORCE: ${{ github.event.inputs.force }}
+        run: |
+          cat > send.mjs <<'JS'
+          import admin from 'firebase-admin';
+          admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SA)) });
+          const db = admin.firestore(), fcm = admin.messaging();
+          const force = process.env.FORCE === 'true';
+          const kst = new Date(Date.now() + 9 * 3600e3);
+          const hour = kst.getUTCHours(), today = kst.toISOString().slice(0, 10);
+          const yest = new Date(kst.getTime() - 864e5).toISOString().slice(0, 10);
+          const plain = ['오늘 단어, 아직 안 외웠어요.', '하루 10분이면 Day 하나 끝나요.', '오늘의 단어가 기다리고 있어요.', '어제 외운 단어, 오늘 한 번 더 보면 안 까먹어요.'];
+          let sent = 0;
+          const users = await db.collection('users').get();
+          for (const u of users.docs) {
+            const ref = u.ref.collection('push').doc('main');
+            const snap = await ref.get();
+            if (!snap.exists) continue;
+            const p = snap.data(), st = u.data();
+            if (!p.enabled || !(p.tokens || []).length) continue;
+            if (!force) {
+              if ((p.hour ?? 12) !== hour) continue;
+              if (p.lastSent === today) continue;
+              if (p.skipIfStudied !== false && st.lastStudy === today) continue;
+            }
+            const due = Object.values(st.review || {}).filter(r => r.due <= today).length;
+            const s = st.streak || {};
+            let body = plain[Math.floor(Math.random() * plain.length)];
+            if (due) body = `복습할 단어 ${due}개. 잊어버리기 전에 지금 보면 딱 좋아요.`;
+            else if (s.last === yest && s.count >= 2) body = `${s.count}일째 연속 학습 중. 오늘도 이어 가요.`;
+            const res = await fcm.sendEachForMulticast({
+              tokens: p.tokens,
+              data: { title: 'VOCAP', body, url: 'https://rlxxlsfp-glitch.github.io/vocap/' },
+              webpush: { headers: { Urgency: 'high', TTL: '21600' } }
+            });
+            const bad = [];
+            res.responses.forEach((r, i) => {
+              if (!r.success) {
+                const c = (r.error && r.error.code) || '';
+                console.log('실패:', c);
+                if (c.includes('not-registered') || c.includes('invalid-registration')) bad.push(p.tokens[i]);
+              }
+            });
+            const upd = { lastSent: today };
+            if (bad.length) upd.tokens = admin.firestore.FieldValue.arrayRemove(...bad);
+            await ref.set(upd, { merge: true });
+            sent += res.successCount;
+          }
+          console.log(`보낸 알림 ${sent}개 (한국 시간 ${hour}시)`);
+          JS
+          node send.mjs
