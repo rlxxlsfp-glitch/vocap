@@ -25,7 +25,13 @@ jobs:
         run: |
           cat > send.mjs <<'JS'
           import admin from 'firebase-admin';
-          admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SA)) });
+          // 열쇠를 복사하다 줄바꿈이 섞여도 읽을 수 있게
+          const raw = process.env.FIREBASE_SA || '';
+          let sa;
+          try { sa = JSON.parse(raw); } catch (e) { sa = JSON.parse(raw.replace(/\r?\n/g, ' ')); }
+          const body = String(sa.private_key || '').replace(/\\n/g, '\n').replace(/-----(BEGIN|END) PRIVATE KEY-----/g, '').replace(/\s+/g, '');
+          sa.private_key = '-----BEGIN PRIVATE KEY-----\n' + body.match(/.{1,64}/g).join('\n') + '\n-----END PRIVATE KEY-----\n';
+          admin.initializeApp({ credential: admin.credential.cert(sa) });
           const db = admin.firestore(), fcm = admin.messaging();
           const force = process.env.FORCE === 'true';
           const kst = new Date(Date.now() + 9 * 3600e3);
